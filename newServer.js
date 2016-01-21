@@ -26,6 +26,7 @@ function start (port,callback) {
         socket.setTimeout(2000);
 
         //keep track of this socket
+
         sockets.push(socket);
 
         //event handlers
@@ -84,6 +85,9 @@ function start (port,callback) {
 
 }
 
+function use(resource, requestHandler) {
+
+}
 //export the method so it's publicly accessible upon requiring the module.
 exports.start = start;
 

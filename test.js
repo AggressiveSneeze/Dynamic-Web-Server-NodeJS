@@ -9,8 +9,8 @@ var serverObj=server.start(8888, './' ,function(a){
     a?(console.log(a)):(console.log('Server is up, port 8888'));
 });
 
-//
-//
+
+
 //console.log("Attempting to access 4 different files from ex2, in the following order:");
 //console.log("index.html, louis.jpeg, calc.html, profile.html");
 //access_file("http://localhost:8888/ex2/index.html");
@@ -20,6 +20,7 @@ var serverObj=server.start(8888, './' ,function(a){
 //
 //
 //function access_file(path) {
+//    console.log('in here:')
 //	var get =http.get(path, function(res) {
 //		console.log(" Got response"   +res.statusCode);
 //		res.resume();
@@ -30,6 +31,6 @@ var serverObj=server.start(8888, './' ,function(a){
 //	    a?(console.log(a)):(console.log('Server is up, port 8888'));
 //	});
 //}
-//
-//
+
+
 

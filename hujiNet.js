@@ -22,20 +22,35 @@ function TypeMap() {
     this['png'] = 'image/png';
 }
 
+function HttpResponse() {
+    this.body=null;
+    this.set=function(){};
+    this.status=function(){};
+    this.get=function(){};
+    this.cookie=function(){};
+    this.send=function(){};
+    this.json=function(){};
+
+}
+//currently handles static reqs
 exports.handleRequest = function(data, socket, rootFolder) {
     try {
         var request = hujiParser.parseRequest(data.toString().trim());
+
         //TODO check if this fucks with asynchronicity
+
+        //handle types of methods here?
         if (request.method!=="GET")  {
             errorResponse(500, socket);
         }
         else {
             var rootRealpath = fs.realpathSync(rootFolder);
-            var uriFullPath = path.normalize(rootRealpath + path.sep + request.uri);
-            if (uriFullPath.indexOf(rootRealpath) !== 0) {
+            var urlFullPath = path.normalize(rootRealpath + path.sep + request.path);
+            //not sure if necessary, isn't this just checking if the line above was okay?
+            if (urlFullPath.indexOf(rootRealpath) !== 0) {
               errorResponse(404, socket);
              } else {
-                 handleResponse(uriFullPath, request, socket);
+                 handleResponse(urlFullPath, request, socket);
             }
         }
     }
@@ -47,51 +62,52 @@ exports.handleRequest = function(data, socket, rootFolder) {
 
 
 
-function handleResponse(uriFullPath, request,socket) {
+function handleResponse(urlFullPath, request,socket) {
     //console.log("handleResponse");
-    fs.stat(uriFullPath, function(err, stats) {
+    fs.stat(urlFullPath, function(err, stats) {
         if(!err && stats.isFile()) {
             var types = new TypeMap();
-            var extension = uriFullPath.substr(uriFullPath.lastIndexOf('.')+1,
-                                                        uriFullPath.length);
+
+            //gets the extension of the requested file
+            var extension = urlFullPath.substr(urlFullPath.lastIndexOf('.')+1,
+                                                        urlFullPath.length);
 
             if(extension in types) {
-                var fd = fs.createReadStream(uriFullPath);
+                var fd = fs.createReadStream(urlFullPath);
                 var contentType=types[extension];
                 var connection;
                 if (request.header.hasOwnProperty('connection')) {
                     connection = request.header['connection'];
                 }
                 else connection=null;
+                //generate the http response string.
                 var response = new hujiParser.HttpResponse(request.ver, success_status, connection, contentType,
                                                 stats.size, fd);
-
+                //send it to the right socket.
                 sendResponse(response, socket);
             }
         }
 
         else {
+            //doesn't exist error
             errorResponse(404,socket);
         }
         //if we're here, error handling. TODO
     } )
 }
-
+//sends the given response string to the given socket.
 function sendResponse(response, socket) {
     //
     var header = response.toString();
 
     if (socket.writable) {
         socket.write(header, function() {
-            //need to check if socket is writeable still?
 
             //autocloses with the conditions defined in the project spec.
             if (response.connection==='close' || (!response.connection && response.version==='1.0') ) {
                 response.body.pipe(socket);
             }
             else response.body.pipe(socket, {end: false});
-
-
         })
 
     }
@@ -100,7 +116,6 @@ function sendResponse(response, socket) {
         //destroy the socket.
         socket.destroy();
     })
-
 }
 
 
@@ -135,6 +150,9 @@ function error_page(error_number) {
     }
     if (error_number===500) {
         return __dirname+path.sep+"500.html";
+    }
+    if (error_number===410) {
+        return __dirname+path.sep+"410.html";
     }
     //else what TODO
 }

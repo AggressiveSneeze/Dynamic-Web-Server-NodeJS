@@ -33,6 +33,7 @@ function start(port,rootFolder,callback) {
 		socket.setTimeout(2000);
 
 		//keep track of this socket
+		console.log("new socket, weow!");
 		sockets.push(socket);
 
 		//event handlers
@@ -47,18 +48,23 @@ function start(port,rootFolder,callback) {
 
 		socket.on('end',function() {
 			var i = sockets.indexOf(socket);
-			sockets.splice(i,1);
+			//console.log("end socket, weno!");
+			//safe guard in case socket has already been deleted (so it's not in the sockets array)
+			if (i!=-1) sockets.splice(i,1);
 		});
 	
 
 		socket.on('timeout',function () {
 			socket.end();
+			//console.log("timeout socket, weno!");
 			var i = sockets.indexOf(socket);
-			sockets.splice(i,1);
+			//safe guard in case socket has already been deleted (so it's not in the sockets array)
+			if (i!=-1) sockets.splice(i,1);
 		});
 
 		//called when the server destroys/closes the connection.
 		socket.on('close', function() {
+			//console.log("close socket, weno!");
 			var i = sockets.indexOf(socket);
 			sockets.splice(i,1);
 		});
@@ -68,13 +74,16 @@ function start(port,rootFolder,callback) {
 	//This will allow the server to be closed.
 	serverObj.server=server;
 
+
+
+	//server level stuff:
+
 	//same as previously, but on a server level:
 	server.setMaxListeners(0);
 
 	server.listen(port, callback);
 	//error handling if server receives an error event.
 	server.on('error',function(errorObj) {
-
 		//note, 'close' event will be called directly following this.
 		callback(errorObj);
 	});
