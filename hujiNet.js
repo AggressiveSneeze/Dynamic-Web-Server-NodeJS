@@ -45,6 +45,8 @@ exports.handleRequest = function(data, socket, rootFolder) {
     }
 }
 
+
+
 function handleResponse(uriFullPath, request,socket) {
     //console.log("handleResponse");
     fs.stat(uriFullPath, function(err, stats) {

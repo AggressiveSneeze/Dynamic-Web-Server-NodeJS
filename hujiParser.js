@@ -34,12 +34,20 @@ function HttpRequest() {
 }
 
 exports.parseRequest = function(data) {
+
     //console.log("parseRequest" + "\n" + data);
     var requestObj = new HttpRequest();
     var groups = data.split(GROUPS_SEP);
+    console.log(groups);
     var meta_data = groups[0].split(NEW_LINE);
+    console.log(meta_data);
     var request_desc = meta_data[0].split(' ');
+    var request_type=request_desc[0];
+    console.log('printing request type:');
+    console.log(request_type);
+    //does this bit check what the method is?
     if((requestsMethods.indexOf(request_desc[METHOD_INDEX]) > -1)){
+
         requestObj.method = request_desc[METHOD_INDEX];
 
     } else {
@@ -66,7 +74,7 @@ exports.parseRequest = function(data) {
        
 
     requestObj.body = '';
-    // reunion groups
+    /// reunion groups
     for(i = 1; i < groups.length - 1; i++) {
         requestObj.body = requestObj.body + groups[i] + GROUPS_SEP;
     }

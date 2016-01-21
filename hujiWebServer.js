@@ -40,6 +40,8 @@ function start(port,rootFolder,callback) {
 		socket.on('data', function(data) {
 			//if we're here, we're receiving data from the user/socket.
 			//so, handle the data, sending the data to hujinet.
+
+			//something else here instead TODO
 			hujiNet.handleRequest(data, socket,rootFolder);
 		});
 
@@ -82,13 +84,13 @@ function start(port,rootFolder,callback) {
 		//just stopping to accept new connections, when server.close is called.
 		for (var i in sockets) {
 			sockets[i].destroy();
-		};
+		}
 		this.server.close(function () {
 			console.log('server is closed.');
-		});
+		})
 	};
 	return serverObj;
-};
+}
 
 //export the method so it's publicly accessible upon requiring the module.
 exports.start = start;
