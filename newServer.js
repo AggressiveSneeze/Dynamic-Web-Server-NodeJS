@@ -3,16 +3,40 @@
 var net = require('net');
 var hujiNet = require('./hujiNet');
 
+//constructor for a usecase object
+function UseCase(resource,requestHandler) {
+    this.resource=resource;
+    this.requestHandler=requestHandler;
+    //TODO can add in regex here.
+
+}
+
+
+
 function start (port,callback) {
 
     console.log('Starting server.');
-    var serverObj={ };
-
+    var serverObj= {};
     //using https://developer.mozilla.org/en/docs/Web/JavaScript/Reference/Global_Objects/Object/defineProperty
+
+
     //adding the immutable (read-only) properties.
     Object.defineProperty(serverObj, 'port', {
         value: port
     });
+
+
+    //give it an empty array for use cases:
+    serverObj.uses=[];
+
+
+
+    //and the function for handling the uses:
+    serverObj.use=function(resource, requestHandler) {
+        //create a regexp string out of the resource string:
+        var reg = create_reg(resource);
+        this.uses.push(new UseCase(resource,requestHandler));
+    };
 
     //create the server (can this be done with a non-anonymous function?)
     var server = net.createServer( function(socket) {
@@ -85,8 +109,18 @@ function start (port,callback) {
 
 }
 
-function use(resource, requestHandler) {
-
+function create_reg(resource) {
+    var folders = resource.split('/');
+    var reg_string = '^';
+    for (var i = 0; i < folders.length; i++) {
+        //standard
+        if (folders[i] != ':') reg_string += folders[i];
+        //param
+        if (folders[i] === ':') reg_string += '\w*';
+        if (i != folders.length - 1) reg_string += '\/';
+    }
+    reg_string += '$';
+    return new RegExp(reg_string);
 }
 //export the method so it's publicly accessible upon requiring the module.
 exports.start = start;
