@@ -4,9 +4,10 @@ var net = require('net');
 var hujiNet = require('./hujiNet');
 
 //constructor for a usecase object
-function UseCase(resource,requestHandler) {
+function UseCase(resource,requestHandler,reg_obj) {
     this.resource=resource;
     this.requestHandler=requestHandler;
+    this.reg_obj=reg_obj;
     //TODO can add in regex here.
 
 }
@@ -33,9 +34,8 @@ function start (port,callback) {
 
     //and the function for handling the uses:
     serverObj.use=function(resource, requestHandler) {
-        //create a regexp string out of the resource string:
-        var reg = create_reg(resource);
-        this.uses.push(new UseCase(resource,requestHandler));
+        //create a regexp string/param list out of the resource string:
+        this.uses.push(new UseCase(resource,requestHandler,create_reg(resource)));
     };
 
     //create the server (can this be done with a non-anonymous function?)
@@ -108,19 +108,32 @@ function start (port,callback) {
     return serverObj;
 
 }
+//not okay yet, need to add in param list and the ability to retrieve
+//as well as deal with the name after the :.
 
 function create_reg(resource) {
     var folders = resource.split('/');
     var reg_string = '^';
+    var reg_obj={};
+    var params=[null];
     for (var i = 0; i < folders.length; i++) {
         //standard
-        if (folders[i] != ':') reg_string += folders[i];
+        if (folders[i][0] != ':') reg_string += folders[i];
         //param
-        if (folders[i] === ':') reg_string += '\w*';
+        if (folders[i][0] === ':') {
+            reg_string += '(\\w*)';
+            //take the param name not including the : and add it to the params list.
+            params.push(folders[i].substr(1));
+        }
+        //add on an escaped slash if we're not on the last directory in the route.
         if (i != folders.length - 1) reg_string += '\/';
     }
     reg_string += '$';
-    return new RegExp(reg_string);
+    console.log(reg_string);
+    reg_obj.reg=new RegExp(reg_string);
+    reg_obj.params=params;
+
+    return reg_obj;
 }
 //export the method so it's publicly accessible upon requiring the module.
 exports.start = start;
