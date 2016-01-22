@@ -1,7 +1,7 @@
 //What's here?
 
 var net = require('net');
-var hujiNet = require('./hujiNet');
+var hujiNet = require('./newHujiNet');
 
 //constructor for a usecase object
 function UseCase(resource,requestHandler,reg_obj) {
@@ -11,6 +11,8 @@ function UseCase(resource,requestHandler,reg_obj) {
 }
 
 
+//array to keep track of sockets
+sockets=[];
 
 function start (port,callback) {
 
@@ -97,7 +99,7 @@ function start (port,callback) {
     serverObj.stop = function (callback) {
         //close all the sockets. Ensures the server hard closes, rather than
         //just stopping to accept new connections, when server.close is called.
-        for (var i in sockets) {
+        for (var i=0; i<sockets.length;i++) {
             sockets[i].destroy();
         }
         this.server.close(function () {
@@ -109,15 +111,13 @@ function start (port,callback) {
 }
 
 function static_1(rootFolder) {
-
-
 }
 
 
 //TODO check this method is behaving. might need a few tweaks.
 function create_reg(resource) {
     var folders = resource.split('/');
-    var reg_string = '^/';
+    var reg_string = '^';
     var reg_obj={};
     var params=[null];
     for (var i = 0; i < folders.length; i++) {

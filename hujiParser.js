@@ -85,6 +85,9 @@ exports.parseRequest = function(data) {
         var header_line = meta_data[i].split(': ');
         requestObj.header[header_line[0]] = header_line[1];
     }
+    console.log('headers are: '+'\n');
+    console.log(requestObj.header);
+    console.log('end of headers.');
     //obtain and remove cookies from header object.
     var cookies=requestObj.header['Cookie'];
     delete requestObj.header['Cookie'];

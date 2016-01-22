@@ -66,7 +66,11 @@ function HttpResponse(socket) {
     this.send=function(body){
         //covers the most basic body
         this.body=body;
-        //do something here to send the response.
+        //do something here to send the response
+        //maybe as simple as
+        sendResponse(this,this.socket);
+        // TODO plus a little fiddling
+        //maybe opening a read stream with body..
 
 
 
@@ -74,12 +78,19 @@ function HttpResponse(socket) {
     this.json=function(body){
         //do something here very similar to above to send a json response.
     };
-
+    //TODO maybe this will have to be changed.
     this.toString = function() {
         var stResponse = '';
-        return stResponse.concat('HTTP/', this.version,' ',this.status, NEW_LINE,
-            'Content-Type: ', this.contentType, NEW_LINE,
-            'Content-Length: ', this.contentLen, GROUPS_SEP);
+        stResponse=stResponse.concat('HTTP/', this.version,' ',this.status, NEW_LINE);
+        //check this
+        for (header in this.headers) {
+            stResponse+=header+headers[header]+NEW_LINE;
+        }
+        //remove trailing new_line:
+        stResponse=stResponse.substring(0,stResponse.length-1);
+        //add final group_sep
+        stResponse+=GROUPS_SEP;
+        return stResponse;
     }
 
 }
@@ -88,8 +99,9 @@ function HttpResponse(socket) {
 //currently handles static reqs
 exports.handleRequest = function(data, socket, uses) {
     try {
-        var request = hujiParser.parseRequest(data.toString().trim());
 
+        var request = hujiParser.parseRequest(data.toString().trim());
+        console.log('here1.');
         //now we have the request sans the params
         //let's see what we can do
 
@@ -98,19 +110,27 @@ exports.handleRequest = function(data, socket, uses) {
             //check if the path matches the use:
             var matches=uses[i].reg_obj.reg.exec(request.path);
             //didn't match, move on.
-            if (!matches) continue;
+            console.log('here continuing, no match.');
+            if (!matches) {
+                continue;
+            }
             //cool, we've got a match. let's check if we have any params:
             if (uses[i].reg_obj.params.length>1) {
                 //cool we have same params to fill in:
                 for(var j=1; j<uses[i].reg_obj.params.length;j++) {
                     request[uses[i].reg_obj.params[j]]=matches[j];
+
                 }
             }
 
             //now we're here with a match that's filled in the params. what now?
             //create a new response object:
-
+            console.log('printing req_obj\n');
+            console.log(request);
+            console.log('printing response');
             var response = new HttpResponse(socket);
+
+            console.log(response);
             //need some kind of next() method to call:
             uses[i].requestHandler(request,response /*,next()*/);
             //need to be able to return to here somehow.
@@ -166,11 +186,11 @@ function sendResponse(response, socket) {
 
     if (socket.writable) {
         socket.write(header, function() {
-            //autocloses with the conditions defined in the project spec.
-            if (response.connection==='close' || (!response.connection && response.version==='1.0') ) {
-                response.body.pipe(socket);
-            }
-            else response.body.pipe(socket, {end: false});
+            ////autocloses with the conditions defined in the project spec.
+            //if (response.connection==='close' || (!response.connection && response.version==='1.0') ) {
+            //    response.body.pipe(socket);
+            //}
+            //else response.body.pipe(socket, {end: false});
         })
 
     }

@@ -85,14 +85,22 @@ exports.parseRequest = function(data) {
         var header_line = meta_data[i].split(': ');
         requestObj.header[header_line[0]] = header_line[1];
     }
+
     //obtain and remove cookies from header object.
+
     var cookies=requestObj.header['Cookie'];
-    delete requestObj.header['Cookie'];
-    cookies=cookies.split(';');
-    var cookie;
-    for (var i; i<cookies.length();i++) {
-        cookie=cookies[i].trim().split('=');
-        requestObj.cookies[cookie[0]]=cookie[1];
+    if (cookies) {
+        delete requestObj.header['Cookie'];
+
+        cookies = cookies.split(';');
+        console.log('here12');
+
+        var cookie;
+
+        for (var i; i < cookies.length(); i++) {
+            cookie = cookies[i].trim().split('=');
+            requestObj.cookies[cookie[0]] = cookie[1];
+        }
     }
 
     //console.log(requestObj.header);
