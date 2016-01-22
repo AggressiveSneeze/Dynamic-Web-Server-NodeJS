@@ -107,9 +107,14 @@ function start (port,callback) {
     return serverObj;
 
 }
-//not okay yet, need to add in param list and the ability to retrieve
-//as well as deal with the name after the :.
 
+function static_1(rootFolder) {
+
+
+}
+
+
+//TODO check this method is behaving. might need a few tweaks.
 function create_reg(resource) {
     var folders = resource.split('/');
     var reg_string = '^/';
