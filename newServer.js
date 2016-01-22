@@ -33,7 +33,12 @@ function start (port,callback) {
 
 
     //and the function for handling the uses:
+    //designed to handle only the request handler being sent.
     serverObj.use=function(resource, requestHandler) {
+        if(typeof requestHandler === 'undefined') {
+            requestHandler=resource;
+            resource='/';
+        }
         //create a regexp string/param list out of the resource string:
         this.uses.push(new UseCase(resource,requestHandler,create_reg(resource)));
     };

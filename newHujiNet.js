@@ -118,7 +118,7 @@ exports.handleRequest = function(data, socket, uses) {
             if (uses[i].reg_obj.params.length>1) {
                 //cool we have same params to fill in:
                 for(var j=1; j<uses[i].reg_obj.params.length;j++) {
-                    request[uses[i].reg_obj.params[j]]=matches[j];
+                    request.params[uses[i].reg_obj.params[j]]=matches[j];
 
                 }
             }
@@ -191,7 +191,8 @@ function sendResponse(response, socket) {
             //    response.body.pipe(socket);
             //}
             //else response.body.pipe(socket, {end: false});
-        })
+        });
+        //socket.write('potato');
 
     }
     //socket isn't writable, so destroy it:
