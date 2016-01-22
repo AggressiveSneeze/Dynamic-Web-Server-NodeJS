@@ -56,7 +56,7 @@ function start (port,callback) {
         socket.on('data', function(data) {
             //if we're here, we're receiving data from the user/socket.
             //so, handle the data, sending the data to hujinet.
-            hujiNet.handleRequest();
+            hujiNet.handleRequest(data,socket,serverObj.uses);
         });
 
         socket.on('end',function() {

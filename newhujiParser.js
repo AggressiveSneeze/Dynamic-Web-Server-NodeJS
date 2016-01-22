@@ -12,13 +12,13 @@ var VERSION_INDEX = 2;
 var HTTP_PROTOCOL = 'HTTP/';
 
 var requestsMethods = [ 'GET',
-                        'HEAD',
-                        'POST',
-                        'PUT',
-                        'DELETE',
-                        'CONNECT',
-                        'OPTIONS',
-                        'TRACE'];
+    'HEAD',
+    'POST',
+    'PUT',
+    'DELETE',
+    'CONNECT',
+    'OPTIONS',
+    'TRACE'];
 //TODO check if consts are okay.
 
 var versionId = ['1.0', '1.1'];
@@ -49,7 +49,7 @@ function HttpRequest() {
     };
     //todo check if this is okay.
     this.is=function(type) {
-        return (this.header['Content-Type']=type);
+        return (this.header['Content-Type']==type);
     };
 }
 
@@ -117,8 +117,8 @@ exports.HttpResponse = function(version, status,connection ,contentType,contentL
     this.toString = function() {
         var stResponse = '';
         return stResponse.concat('HTTP/', this.version,' ',this.status, NEW_LINE,
-                                       'Content-Type: ', this.contentType, NEW_LINE,
-                                       'Content-Length: ', this.contentLen, GROUPS_SEP);
+            'Content-Type: ', this.contentType, NEW_LINE,
+            'Content-Length: ', this.contentLen, GROUPS_SEP);
     }
 };
 

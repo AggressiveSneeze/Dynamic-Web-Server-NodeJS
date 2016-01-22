@@ -2,7 +2,9 @@
  * Created by Oak on 12/28/2015.
  */
 
-var hujiParser = require('./hujiParser.js');
+var GROUPS_SEP = '\r\n\r\n';
+var NEW_LINE = '\r\n';
+var hujiParser = require('./newhujiParser.js');
 var net = require('net');
 var fs = require('fs');
 var path = require('path');
@@ -23,12 +25,19 @@ function TypeMap() {
 }
 //TODO add support for multi adding headers/cookies
 //TODO support for extra stuff besides number in status
-function HttpResponse() {
+function HttpResponse(socket) {
+    //where to get from?
+    this.version = '1.0';
     this.cookies={
         //each cookie with name has an object as its value with
         //the entries from the .cookie() function.
     };
-    this.headers={};
+    this.headers={
+
+        //put some default stuff in here:
+
+    };
+    this.socket=socket;
     this.body=null;
     this.status=null;
     this.set=function(field,value){
@@ -36,6 +45,8 @@ function HttpResponse() {
     };
     this.status=function(code){
         this.status=code;
+        //return this so another function (like .send() can be stacked)
+        return this;
     };
     this.get=function(field){
         return this.headers[field];
@@ -53,36 +64,58 @@ function HttpResponse() {
         this.cookies[name]['signed']=options['signed'];
     };
     this.send=function(body){
+        //covers the most basic body
+        this.body=body;
         //do something here to send the response.
+
+
+
     };
     this.json=function(body){
         //do something here very similar to above to send a json response.
     };
 
+    this.toString = function() {
+        var stResponse = '';
+        return stResponse.concat('HTTP/', this.version,' ',this.status, NEW_LINE,
+            'Content-Type: ', this.contentType, NEW_LINE,
+            'Content-Length: ', this.contentLen, GROUPS_SEP);
+    }
+
 }
+
+
 //currently handles static reqs
-exports.handleRequest = function(data, socket, rootFolder) {
+exports.handleRequest = function(data, socket, uses) {
     try {
         var request = hujiParser.parseRequest(data.toString().trim());
 
         //now we have the request sans the params
+        //let's see what we can do
 
-        //handle types of methods here?
-        if (request.method!=="GET")  {
-            errorResponse(500, socket);
-        }
-        else {
-            var rootRealpath = fs.realpathSync(rootFolder);
-            var urlFullPath = path.normalize(rootRealpath + path.sep + request.path);
-            //not sure if necessary, isn't this just checking if the line above was okay?
-            if (urlFullPath.indexOf(rootRealpath) !== 0) {
-              errorResponse(404, socket);
-             } else {
-                 handleResponse(urlFullPath, request, socket);
+        //first stage, iterate over all the uses:
+        for(var i=0;i<uses.length;i++) {
+            //check if the path matches the use:
+            var matches=uses[i].reg_obj.reg.exec(request.path);
+            //didn't match, move on.
+            if (!matches) continue;
+            //cool, we've got a match. let's check if we have any params:
+            if (uses[i].reg_obj.params.length>1) {
+                //cool we have same params to fill in:
+                for(var j=1; j<uses[i].reg_obj.params.length;j++) {
+                    request[uses[i].reg_obj.params[j]]=matches[j];
+                }
             }
+
+            //now we're here with a match that's filled in the params. what now?
+            //create a new response object:
+
+            var response = new HttpResponse(socket);
+            //need some kind of next() method to call:
+            uses[i].requestHandler(request,response /*,next()*/);
+            //need to be able to return to here somehow.
         }
     }
-
     catch (e) {
         errorResponse(400, socket);
     }
@@ -98,7 +131,7 @@ function handleResponse(urlFullPath, request,socket) {
 
             //gets the extension of the requested file
             var extension = urlFullPath.substr(urlFullPath.lastIndexOf('.')+1,
-                                                        urlFullPath.length);
+                urlFullPath.length);
 
             if(extension in types) {
 
@@ -111,7 +144,7 @@ function handleResponse(urlFullPath, request,socket) {
                 else connection=null;
                 //generate the http response string.
                 var response = new hujiParser.HttpResponse(request.ver, success_status, connection, contentType,
-                                                stats.size, fd);
+                    stats.size, fd);
                 //send it to the right socket.
                 sendResponse(response, socket);
             }
@@ -124,6 +157,8 @@ function handleResponse(urlFullPath, request,socket) {
         //if we're here, error handling. TODO
     } )
 }
+
+
 //sends the given response string to the given socket.
 function sendResponse(response, socket) {
     //
@@ -159,7 +194,7 @@ function errorResponse(error_number, socket) {
             //if keeping connection open, change the connection arg from null TODO
 
             var response = new hujiParser.HttpResponse('1.0',error_number, null, type['html'],
-                                                        stats.size,fd);
+                stats.size,fd);
 
             sendResponse(response,socket);
         }
