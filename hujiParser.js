@@ -31,7 +31,7 @@ function HttpRequest() {
     this.method = null;
     this.ver = null;
     this.header = {};
-    this.body = null
+    this.body = null;
 
     //adding new stuff for ex4
     this.params=null;
@@ -43,14 +43,14 @@ function HttpRequest() {
     this.protocol=null;
     this.get=function(field) {
         return this.header[field];
-    }
+    };
     this.param=function(field) {
         return this.params[field];
-    }
+    };
     //todo check if this is okay.
     this.is=function(type) {
         return (this.header['Content-Type']=type);
-    }
+    };
 }
 
 exports.parseRequest = function(data) {
@@ -69,6 +69,7 @@ exports.parseRequest = function(data) {
     var vid = request_desc[VERSION_INDEX].split('/');
     requestObj.protocol=vid[0].toLowerCase();
     requestObj.path=url_object.pathname;
+    //console.log(requestObj.path);
     requestObj.host=meta_data[1].split(' ')[1].split(':')[0];
     requestObj.query=url_object.query;
 
@@ -83,13 +84,22 @@ exports.parseRequest = function(data) {
 
     //header and body stuff
 
-    //TODO??problem is in the for loop, throwing error.
+    //TODO trim the fat from header (if not needed)
     for(i = 1; i < meta_data.length; i++) {
         var header_line = meta_data[i].split(': ');
         requestObj.header[header_line[0]] = header_line[1];
     }
-    //console.log(requestObj.header);
-       
+    //obtain and remove cookies from header object.
+    var cookies=requestObj.header['Cookie'];
+    delete requestObj.header['Cookie'];
+    cookies=cookies.split(';');
+    var cookie;
+    for (var i; i<cookies.length();i++) {
+        cookie=cookies[i].trim().split('=');
+        requestObj.cookies[cookie[0]]=cookie[1];
+    }
+
+    console.log(requestObj.header);
 
     requestObj.body = '';
     /// reunion groups
@@ -99,7 +109,7 @@ exports.parseRequest = function(data) {
     requestObj.body = requestObj.body + groups[i];
     //console.log(requestObj);
     return requestObj;
-}
+};
 
 exports.HttpResponse = function(version, status,connection ,contentType,contentLen,fd) {
     this.version = version;
@@ -114,7 +124,7 @@ exports.HttpResponse = function(version, status,connection ,contentType,contentL
                                        'Content-Type: ', this.contentType, NEW_LINE,
                                        'Content-Length: ', this.contentLen, GROUPS_SEP);
     }
-}
+};
 
 
 

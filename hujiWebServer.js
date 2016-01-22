@@ -33,7 +33,7 @@ function start(port,rootFolder,callback) {
 		socket.setTimeout(2000);
 
 		//keep track of this socket
-		console.log("new socket, weow!");
+		//console.log("new socket, weow!");
 		sockets.push(socket);
 
 		//event handlers

@@ -21,15 +21,31 @@ function TypeMap() {
     this['gif'] = 'image/gif';
     this['png'] = 'image/png';
 }
-
+//TODO add support for multi adding headers/cookies
+//TODO support for extra stuff besides number in status
 function HttpResponse() {
+    this.cookies={};
+    this.headers={};
     this.body=null;
-    this.set=function(){};
-    this.status=function(){};
-    this.get=function(){};
-    this.cookie=function(){};
-    this.send=function(){};
-    this.json=function(){};
+    this.status=null;
+    this.set=function(field,value){
+        this.headers.field=value;
+    };
+    this.status=function(code){
+        this.status=code;
+    };
+    this.get=function(field){
+        return this.headers[field];
+    };
+    this.cookie=function(name,value){
+        this.cookies.name=value;
+    };
+    this.send=function(body){
+        //do something here to send the response.
+    };
+    this.json=function(body){
+        //do something here very similar to above to send a json response.
+    };
 
 }
 //currently handles static reqs
@@ -58,7 +74,7 @@ exports.handleRequest = function(data, socket, rootFolder) {
     catch (e) {
         errorResponse(400, socket);
     }
-}
+};
 
 
 

@@ -8,8 +8,6 @@ function UseCase(resource,requestHandler,reg_obj) {
     this.resource=resource;
     this.requestHandler=requestHandler;
     this.reg_obj=reg_obj;
-    //TODO can add in regex here.
-
 }
 
 
@@ -63,20 +61,21 @@ function start (port,callback) {
 
         socket.on('end',function() {
             var i = sockets.indexOf(socket);
-            sockets.splice(i,1);
+            if (i!=-1) sockets.splice(i,1);
         });
 
 
         socket.on('timeout',function () {
             socket.end();
             var i = sockets.indexOf(socket);
-            sockets.splice(i,1);
+            if (i!=-1) sockets.splice(i,1);
+
         });
 
         //called when the server destroys/closes the connection.
         socket.on('close', function() {
             var i = sockets.indexOf(socket);
-            sockets.splice(i,1);
+            if (i!=-1) sockets.splice(i,1);
         });
     });
 
@@ -113,7 +112,7 @@ function start (port,callback) {
 
 function create_reg(resource) {
     var folders = resource.split('/');
-    var reg_string = '^';
+    var reg_string = '^/';
     var reg_obj={};
     var params=[null];
     for (var i = 0; i < folders.length; i++) {
@@ -128,7 +127,7 @@ function create_reg(resource) {
         //add on an escaped slash if we're not on the last directory in the route.
         if (i != folders.length - 1) reg_string += '\/';
     }
-    reg_string += '$';
+    reg_string += '';
     console.log(reg_string);
     reg_obj.reg=new RegExp(reg_string);
     reg_obj.params=params;
