@@ -124,7 +124,7 @@ exports.HttpResponse = function(version, status,connection ,contentType,contentL
     this.body = fd;
     this.toString = function() {
         var stResponse = '';
-        return stResponse.concat('HTTP/', this.version,' ',this.status, NEW_LINE,
+        return stResponse.concat(HTTP_PROTOCOL, this.version,' ',this.status, NEW_LINE,
             'Content-Type: ', this.contentType, NEW_LINE,
             'Content-Length: ', this.contentLen, GROUPS_SEP);
     }

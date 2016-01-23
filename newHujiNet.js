@@ -110,8 +110,9 @@ exports.handleRequest = function(data, socket, uses) {
             //check if the path matches the use:
             var matches=uses[i].reg_obj.reg.exec(request.path);
             //didn't match, move on.
-            console.log('here continuing, no match.');
+
             if (!matches) {
+                console.log('here continuing, no match.');
                 continue;
             }
             //cool, we've got a match. let's check if we have any params:
@@ -125,12 +126,12 @@ exports.handleRequest = function(data, socket, uses) {
 
             //now we're here with a match that's filled in the params. what now?
             //create a new response object:
-            console.log('printing req_obj\n');
-            console.log(request);
-            console.log('printing response');
+            //console.log('printing req_obj\n');
+            //console.log(request);
+            //console.log('printing response');
             var response = new HttpResponse(socket);
 
-            console.log(response);
+            //console.log(response);
             //need some kind of next() method to call:
             uses[i].requestHandler(request,response /*,next()*/);
             //need to be able to return to here somehow.
@@ -143,18 +144,31 @@ exports.handleRequest = function(data, socket, uses) {
 
 
 
-function handleResponse(urlFullPath, request,socket) {
-    //console.log("handleResponse");
+exports.handleStaticResponse=function(request,socket,rootFolder) {
+    //console.log("handleStaticResponse");
+    try{
+        if (request.method!=="GET")  {
+            errorResponse(500, socket);
+        }
+        else {
+            var rootRealpath = fs.realpathSync('./');
+            var urlFullPath = path.normalize(rootRealpath + '/'+rootFolder+ request.path);
+            console.log('trying to serve from the path '+urlFullPath);
+            //not sure if necessary, isn't this just checking if the line above was okay?
+            if (urlFullPath.indexOf(rootRealpath) !== 0) errorResponse(404, socket);
+        }
+    }
+
+    catch (e) {
+        errorResponse(400, socket);
+    }
     fs.stat(urlFullPath, function(err, stats) {
         if(!err && stats.isFile()) {
             var types = new TypeMap();
-
             //gets the extension of the requested file
             var extension = urlFullPath.substr(urlFullPath.lastIndexOf('.')+1,
                 urlFullPath.length);
-
             if(extension in types) {
-
                 var fd = fs.createReadStream(urlFullPath);
                 var contentType=types[extension];
                 var connection;
@@ -163,11 +177,12 @@ function handleResponse(urlFullPath, request,socket) {
                 }
                 else connection=null;
                 //generate the http response string.
-                var response = new hujiParser.HttpResponse(request.ver, success_status, connection, contentType,
+                var response = new hujiParser.HttpResponse(request.version, success_status, connection, contentType,
                     stats.size, fd);
                 //send it to the right socket.
                 sendResponse(response, socket);
             }
+            //TODO what if extension isn't in types?
         }
 
         else {
@@ -201,6 +216,27 @@ function sendResponse(response, socket) {
         socket.destroy();
     })
 }
+//sends the given response string to the given socket.
+function sendStaticResponse(response, socket) {
+    //
+    var header = response.toString();
+
+    if (socket.writable) {
+        socket.write(header, function() {
+            //autocloses with the conditions defined in the project spec.
+            if (response.connection==='close' || (!response.connection && response.version==='1.0') ) {
+                response.body.pipe(socket);
+            }
+            else response.body.pipe(socket, {end: false});
+        });
+    }
+    //socket isn't writable, so destroy it:
+    socket.on('error', function() {
+        //destroy the socket.
+        socket.destroy();
+    })
+}
+
 
 
 //open file as buffer.

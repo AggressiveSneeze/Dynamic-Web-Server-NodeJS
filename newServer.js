@@ -43,6 +43,7 @@ function start (port,callback) {
         this.uses.push(new UseCase(resource,requestHandler,create_reg(resource)));
     };
 
+
     //create the server (can this be done with a non-anonymous function?)
     var server = net.createServer( function(socket) {
         //since we're dealing with plain text requests, not hexadecimal
@@ -96,7 +97,7 @@ function start (port,callback) {
     server.listen(port, callback);
     //error handling if server receives an error event.
     server.on('error',function(errorObj) {
-
+        console.log('her12e');
         //note, 'close' event will be called directly following this.
         callback(errorObj);
     });
@@ -115,8 +116,18 @@ function start (port,callback) {
 
 }
 
-function static_1(rootFolder) {
-}
+exports.static=function(rootFolder) {
+
+    //make it return a requestHandler function:
+    console.log('in static');
+    return function(req,res,next) {
+        console.log('in the static function!');
+            hujiNet.handleStaticResponse(req,res.socket,rootFolder);
+        //next();
+    }
+
+
+};
 
 
 //TODO check this method is behaving. might need a few tweaks.

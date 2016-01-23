@@ -236,10 +236,11 @@ server.use('/test/json', function(req, res, next) {
     res.status(200).send(JSON.stringify(req.body));
 });
 
-//server.use("/static", hujiwebserver.static("www"));
-//server.use('/test/bodyParser', function(req, res, next) {
-//    res.status(200).send(JSON.stringify(req.body));
-//});
+server.use("/static", hujiwebserver.static("www"));
+
+server.use('/test/bodyParser', function(req, res, next) {
+    res.status(200).send(JSON.stringify(req.body));
+});
 
 
 setTimeout(function() {

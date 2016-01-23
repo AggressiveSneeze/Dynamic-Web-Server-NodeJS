@@ -64,7 +64,7 @@ function HttpResponse() {
 exports.handleRequest = function(data, socket, rootFolder) {
     try {
         var request = hujiParser.parseRequest(data.toString().trim());
-
+        console.log('here');
         //now we have the request sans the params
 
         //handle types of methods here?
@@ -73,7 +73,8 @@ exports.handleRequest = function(data, socket, rootFolder) {
         }
         else {
             var rootRealpath = fs.realpathSync(rootFolder);
-            var urlFullPath = path.normalize(rootRealpath + path.sep + request.path);
+            console.log('rootrealpath is:' + rootRealpath);
+            var urlFullPath = path.normalize(rootRealpath + request.path);
             //not sure if necessary, isn't this just checking if the line above was okay?
             if (urlFullPath.indexOf(rootRealpath) !== 0) {
               errorResponse(404, socket);
@@ -92,6 +93,7 @@ exports.handleRequest = function(data, socket, rootFolder) {
 
 function handleResponse(urlFullPath, request,socket) {
     //console.log("handleResponse");
+    console.log("what's our urfFullpath?: "+urlFullPath);
     fs.stat(urlFullPath, function(err, stats) {
         if(!err && stats.isFile()) {
             var types = new TypeMap();

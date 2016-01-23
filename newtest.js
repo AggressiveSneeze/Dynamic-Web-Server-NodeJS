@@ -10,20 +10,25 @@ var serverObj=server.start(8888,function(a){
 });
 
 
-serverObj.use('/test/cookie', function(req, res, next) {
-    res.status(200);
-    res.send(req.cookies);
-});
+//serverObj.use('/test/cookie', function(req, res, next) {
+//    res.status(200);
+//    res.send(req.cookies);
+//});
+//
+//serverObj.use('/x/y', function(req, res, next) {
+//    res.status(200);
+//    res.send(req.path);
+//});
+//
+//serverObj.use('/params/:id/gabi/:num', function(req, res, next) {
+//    res.status(200);
+//    res.send(req.path + '->' + JSON.stringify(req.params));
+//});
 
-serverObj.use('/x/y', function(req, res, next) {
-    res.status(200);
-    res.send(req.path);
-});
+serverObj.use("/static", server.static("www"));
 
-serverObj.use('/params/:id/gabi/:num', function(req, res, next) {
-    res.status(200);
-    res.send(req.path + '->' + JSON.stringify(req.params));
-});
+
+
 
 
 
