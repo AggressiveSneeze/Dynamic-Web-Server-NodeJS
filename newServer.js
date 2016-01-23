@@ -33,8 +33,9 @@ function start (port,callback) {
 
 
     //and the function for handling the uses:
-    //designed to handle only the request handler being sent.
+
     serverObj.use=function(resource, requestHandler) {
+        //in case only the request handler being sent.
         if(typeof requestHandler === 'undefined') {
             requestHandler=resource;
             resource='/';
@@ -53,7 +54,7 @@ function start (port,callback) {
         socket.setMaxListeners(0);
 
         //2s according to project spec
-        socket.setTimeout(2000);
+        socket.setTimeout(10000);
 
         //keep track of this socket
 
@@ -97,7 +98,7 @@ function start (port,callback) {
     server.listen(port, callback);
     //error handling if server receives an error event.
     server.on('error',function(errorObj) {
-        console.log('her12e');
+        console.log('socket error');
         //note, 'close' event will be called directly following this.
         callback(errorObj);
     });
@@ -119,7 +120,7 @@ function start (port,callback) {
 exports.static=function(rootFolder) {
 
     //make it return a requestHandler function:
-    console.log('in static');
+    //console.log('in static');
     return function(req,res,next) {
         console.log('in the static function!');
             hujiNet.handleStaticResponse(req,res.socket,rootFolder);
@@ -149,7 +150,6 @@ function create_reg(resource) {
         if (i != folders.length - 1) reg_string += '\/';
     }
     reg_string += '';
-    console.log(reg_string);
     reg_obj.reg=new RegExp(reg_string);
     reg_obj.params=params;
 

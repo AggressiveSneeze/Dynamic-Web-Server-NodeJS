@@ -69,7 +69,6 @@ exports.parseRequest = function(data) {
     var vid = request_desc[VERSION_INDEX].split('/');
     requestObj.protocol=vid[0].toLowerCase();
     requestObj.path=url_object.pathname;
-    console.log(requestObj.path);
     requestObj.host=meta_data[1].split(' ')[1].split(':')[0];
     requestObj.query=url_object.query;
 
@@ -91,30 +90,33 @@ exports.parseRequest = function(data) {
     var cookies=requestObj.header['Cookie'];
     if (cookies) {
         delete requestObj.header['Cookie'];
-
         cookies = cookies.split(';');
-        console.log('here12');
-
         var cookie;
 
-        for (var i; i < cookies.length(); i++) {
+        for (var i=0; i < cookies.length(); i++) {
             cookie = cookies[i].trim().split('=');
             requestObj.cookies[cookie[0]] = cookie[1];
         }
     }
 
     //console.log(requestObj.header);
-
+    //console.log('cheese');
     requestObj.body = '';
     /// reunion groups
     for(i = 1; i < groups.length - 1; i++) {
+        console.log('body component: ');
+        console.log(groups[i]);
         requestObj.body = requestObj.body + groups[i] + GROUPS_SEP;
     }
-    requestObj.body = requestObj.body + groups[i];
+    //add the last part of the body (only if there was a body)
+    if (i>1) requestObj.body = requestObj.body + groups[i];
+    //reassign body to null as described in project spec (if no body exists.)
+    if (requestObj.body==='') requestObj.body=null;
     //console.log(requestObj);
     return requestObj;
 };
 
+//for static (used in ex3 so carried over for this.)
 exports.HttpResponse = function(version, status,connection ,contentType,contentLen,fd) {
     this.version = version;
     this.status = status;

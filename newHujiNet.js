@@ -26,6 +26,7 @@ function TypeMap() {
 //TODO add support for multi adding headers/cookies
 //TODO support for extra stuff besides number in status
 function HttpResponse(socket) {
+    this.types=new TypeMap();
     //where to get from?
     this.version = '1.0';
     this.cookies={
@@ -39,12 +40,12 @@ function HttpResponse(socket) {
     };
     this.socket=socket;
     this.body=null;
-    this.status=null;
+    this.status_code=200;
     this.set=function(field,value){
         this.headers.field=value;
     };
     this.status=function(code){
-        this.status=code;
+        this.status_code=code;
         //return this so another function (like .send() can be stacked)
         return this;
     };
@@ -64,15 +65,37 @@ function HttpResponse(socket) {
         this.cookies[name]['signed']=options['signed'];
     };
     this.send=function(body){
+        if(typeof(body) === 'undefined') {
+            this.headers['Content-Type: ']=this.types['html'];
+            this.headers['Content-Length: ']=this.body.length;
+            //console.log(this.headers);
+            sendResponse(this,this.socket);
+        }
+
+        if (typeof(body)==='string') {
+            this.body=body;
+            this.headers['Content-Type: ']=this.types['html'];
+            this.headers['Content-Length: ']=this.body.length;
+        }
+
+        else if (Buffer.isBuffer(body)){
+            this.body=body.toString();
+            this.headers['Content-Type: ']=this.types['html'];
+            this.headers['Content-Length: ']=this.body.length;
+
+        }
+        else if (Array.isArray(body) || typeof(body)==='object') {
+            this.body=JSON.stringify(body);
+            this.headers['Content-Type: ']=this.types['html'];
+            this.headers['Content-Length: ']=this.body.length;
+        }
         //covers the most basic body
-        this.body=body;
+
         //do something here to send the response
         //maybe as simple as
         sendResponse(this,this.socket);
         // TODO plus a little fiddling
         //maybe opening a read stream with body..
-
-
 
     };
     this.json=function(body){
@@ -81,10 +104,15 @@ function HttpResponse(socket) {
     //TODO maybe this will have to be changed.
     this.toString = function() {
         var stResponse = '';
-        stResponse=stResponse.concat('HTTP/', this.version,' ',this.status, NEW_LINE);
+        stResponse=stResponse.concat('HTTP/', this.version,' ',String(this.status_code), NEW_LINE);
         //check this
-        for (header in this.headers) {
-            stResponse+=header+headers[header]+NEW_LINE;
+        //console.log('headers are:');
+        //console.log(this.headers);
+        //how important is the order? (could put content len/type first?)
+        for (var header in this.headers) {
+            if (this.headers.hasOwnProperty(header)) {
+                stResponse=stResponse.concat(header, this.headers[header], NEW_LINE);
+            }
         }
         //remove trailing new_line:
         stResponse=stResponse.substring(0,stResponse.length-1);
@@ -99,9 +127,8 @@ function HttpResponse(socket) {
 //currently handles static reqs
 exports.handleRequest = function(data, socket, uses) {
     try {
-
+        var if_match=false;
         var request = hujiParser.parseRequest(data.toString().trim());
-        console.log('here1.');
         //now we have the request sans the params
         //let's see what we can do
 
@@ -112,9 +139,11 @@ exports.handleRequest = function(data, socket, uses) {
             //didn't match, move on.
 
             if (!matches) {
-                console.log('here continuing, no match.');
+                //console.log('no match.');
                 continue;
             }
+            //console.log('weve got a match');
+            if_match=true;
             //cool, we've got a match. let's check if we have any params:
             if (uses[i].reg_obj.params.length>1) {
                 //cool we have same params to fill in:
@@ -134,13 +163,45 @@ exports.handleRequest = function(data, socket, uses) {
             //console.log(response);
             //need some kind of next() method to call:
             uses[i].requestHandler(request,response /*,next()*/);
-            //need to be able to return to here somehow.
+            //need to be able to return to here somehow. (with the next())
+        }
+        if(!if_match) {
+            //okay no match, return error response 404 instead as described in spec.:
+            errorResponse(404,socket);
         }
     }
     catch (e) {
         errorResponse(400, socket);
     }
 };
+
+
+//sends the given response string to the given socket.
+function sendResponse(response, socket) {
+
+
+    var header = response.toString();
+
+    console.log(header);
+    if (socket.writable) {
+        socket.write(header, function() {
+            //autocloses with the conditions defined in the project spec.
+            if (response.connection==='close' || (!response.connection && response.version==='1.0') ) {
+                console.log('body is: '+response.body);
+                socket.write(response.body);
+            }
+            else socket.write(response.body);
+        });
+        //socket.write('potato');
+
+    }
+    //socket isn't writable, so destroy it:
+    socket.on('error', function() {
+        //destroy the socket.
+        socket.destroy();
+    })
+}
+
 
 
 
@@ -191,31 +252,13 @@ exports.handleStaticResponse=function(request,socket,rootFolder) {
         }
         //if we're here, error handling. TODO
     } )
-}
+};
 
 
-//sends the given response string to the given socket.
-function sendResponse(response, socket) {
-    //
-    var header = response.toString();
 
-    if (socket.writable) {
-        socket.write(header, function() {
-            ////autocloses with the conditions defined in the project spec.
-            //if (response.connection==='close' || (!response.connection && response.version==='1.0') ) {
-            //    response.body.pipe(socket);
-            //}
-            //else response.body.pipe(socket, {end: false});
-        });
-        //socket.write('potato');
 
-    }
-    //socket isn't writable, so destroy it:
-    socket.on('error', function() {
-        //destroy the socket.
-        socket.destroy();
-    })
-}
+//yes! static works!    
+
 //sends the given response string to the given socket.
 function sendStaticResponse(response, socket) {
     //

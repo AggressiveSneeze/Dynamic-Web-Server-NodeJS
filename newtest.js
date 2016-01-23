@@ -20,15 +20,32 @@ var serverObj=server.start(8888,function(a){
 //    res.send(req.path);
 //});
 //
-//serverObj.use('/params/:id/gabi/:num', function(req, res, next) {
-//    res.status(200);
-//    res.send(req.path + '->' + JSON.stringify(req.params));
-//});
+serverObj.use('/params/:id/gabi/:num', function(req, res, next) {
+    res.status(200);
+    console.log('should be sending:');
+    console.log(req.path + '->' + JSON.stringify(req.params));
+    res.send(req.path + '->' + JSON.stringify(req.params));
+});
 
 serverObj.use("/static", server.static("www"));
 
+serverObj.use('/x/y', function(req, res, next) {
+    res.status(200);
+    res.send(req.path);
+});
+
+serverObj.use('/response/test/next', function(req, res, next) {
+    res.body = 'next1;';
+    res.send();
+    //next();
+});
 
 
+serverObj.use('/request/test/params/:param', function(req, res, next) {
+
+    res.status(200);
+    res.send(JSON.stringify(req.params));
+});
 
 
 
