@@ -723,6 +723,5 @@ var test_l = [
             status:200,
             data:"true"
         }
-    },
-
+    }
 ];

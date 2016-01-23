@@ -23,26 +23,29 @@ function TypeMap() {
     this['gif'] = 'image/gif';
     this['png'] = 'image/png';
 }
-//TODO add support for multi adding headers/cookies
+
 //TODO support for extra stuff besides number in status
 function HttpResponse(socket) {
     this.types=new TypeMap();
-    //where to get from?
     this.version = '1.0';
     this.cookies={
         //each cookie with name has an object as its value with
         //the entries from the .cookie() function.
     };
     this.headers={
-
         //put some default stuff in here:
-
     };
     this.socket=socket;
     this.body=null;
     this.status_code=200;
     this.set=function(field,value){
-        this.headers.field=value;
+        //make sure it works for multiple adding:
+        if (typeof value === 'undefined') {
+            for (var head in field) {
+                if (field.hasOwnProperty(head)) this.set(head,field[head]);
+            }
+        }
+        else this.headers.field=value;
     };
     this.status=function(code){
         this.status_code=code;
@@ -55,14 +58,9 @@ function HttpResponse(socket) {
     this.cookie=function(name,value,options){
         this.cookies.name={};
         this.cookies[name]['value']=value;
-        this.cookies[name]['domain']=options['domain'];
-        this.cookies[name]['encode']=options['encode'];
-        this.cookies[name]['expires']=options['expires'];
-        this.cookies[name]['httpOnly']=options['httpOnly'];
-        this.cookies[name]['maxAge']=options['maxAge'];
-        this.cookies[name]['path']=options['path'];
-        this.cookies[name]['secure']=options['secure'];
-        this.cookies[name]['signed']=options['signed'];
+        for(var option in options) {
+            if (options.hasOwnProperty(option)) this.cookies[name][option]=options[option];
+        }
     };
     this.send=function(body){
         //if(typeof(body) === 'undefined') {
@@ -93,16 +91,33 @@ function HttpResponse(socket) {
 
         //do something here to send the response
         //maybe as simple as
-        sendResponse(this,this.socket);
+        //sendResponse(this,this.socket);
+        var header = this.toString();
+        if (this.socket.writable) {
+            this.socket.write(header);
+            this.socket.write(this.body);
+        }
+            //socket.write('potato');
+
+        ////socket isn't writable, so destroy it:
+        //socket.on('error', function() {
+        //    //destroy the socket.
+        //    socket.destroy();
+        //});
         //
         // TODO plus a little fiddling
         //maybe opening a read stream with body..
 
     };
     this.json=function(body){
-
-
-        //do something here very similar to above to send a json response.
+        this.body=JSON.stringify(body);
+        this.headers['Content-Type: ']=this.types['html'];
+        this.headers['Content-Length: ']=this.body.length;
+        var header = this.toString();
+        if (this.socket.writable) {
+            this.socket.write(header);
+            this.socket.write(this.body);
+        }
     };
     //TODO maybe this will have to be changed.
     this.toString = function() {
