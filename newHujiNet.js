@@ -180,7 +180,7 @@ exports.handleStaticResponse=function(request,socket,rootFolder) {
                 var response = new hujiParser.HttpResponse(request.version, success_status, connection, contentType,
                     stats.size, fd);
                 //send it to the right socket.
-                sendResponse(response, socket);
+                sendStaticResponse(response, socket);
             }
             //TODO what if extension isn't in types?
         }
