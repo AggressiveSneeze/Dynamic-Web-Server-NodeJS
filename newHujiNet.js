@@ -65,12 +65,12 @@ function HttpResponse(socket) {
         this.cookies[name]['signed']=options['signed'];
     };
     this.send=function(body){
-        if(typeof(body) === 'undefined') {
-            this.headers['Content-Type: ']=this.types['html'];
-            this.headers['Content-Length: ']=this.body.length;
-            //console.log(this.headers);
-            sendResponse(this,this.socket);
-        }
+        //if(typeof(body) === 'undefined') {
+        //    this.headers['Content-Type: ']=this.types['html'];
+        //    this.headers['Content-Length: ']=this.body.length;
+        //    //console.log(this.headers);
+        //    sendResponse(this,this.socket);
+        //}
 
         if (typeof(body)==='string') {
             this.body=body;
@@ -94,11 +94,14 @@ function HttpResponse(socket) {
         //do something here to send the response
         //maybe as simple as
         sendResponse(this,this.socket);
+        //
         // TODO plus a little fiddling
         //maybe opening a read stream with body..
 
     };
     this.json=function(body){
+
+
         //do something here very similar to above to send a json response.
     };
     //TODO maybe this will have to be changed.
