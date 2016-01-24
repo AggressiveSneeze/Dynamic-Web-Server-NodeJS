@@ -13,20 +13,12 @@ var path = require('path');
 var success_status = 200;
 
 
-function TypeMap() {
-    this['js'] = 'application/javascript';
-    this['html'] = 'text/html';
-    this['txt'] = 'text/plain';
-    this['css'] = 'text/css';
-    this['jpg'] = 'image/jpeg';
-    this['jpeg'] = 'image/jpeg';
-    this['gif'] = 'image/gif';
-    this['png'] = 'image/png';
-}
+
 
 //TODO support for extra stuff besides number in status
 function HttpResponse(socket) {
-    this.types=new TypeMap();
+    this.sent=false;
+    this.types=new hujiParser.TypeMap();
     this.version = '1.0';
     this.cookies={
         //each cookie with name has an object as its value with
@@ -42,7 +34,9 @@ function HttpResponse(socket) {
         //make sure it works for multiple adding:
         if (typeof value === 'undefined') {
             for (var head in field) {
-                if (field.hasOwnProperty(head)) this.set(head,field[head]);
+                if (field.hasOwnProperty(head)) {
+                    this.headers[head]=field[head];
+                }
             }
         }
         else this.headers.field=value;
@@ -72,21 +66,21 @@ function HttpResponse(socket) {
 
         if (typeof(body)==='string') {
             this.body=body;
-            this.headers['Content-Type: ']=this.types['html'];
-            //only worked adding+2?
-            this.headers['Content-Length: ']=this.body.length;
+
+            if (!this.headers.hasOwnProperty('Content-Type')) this.headers['Content-Type']=this.types['html'];
+            this.headers['Content-Length']=this.body.length;
         }
 
         else if (Buffer.isBuffer(body)){
             this.body=body.toString();
-            this.headers['Content-Type: ']=this.types['html'];
-            this.headers['Content-Length: ']=this.body.length;
+            if (!this.headers.hasOwnProperty('Content-Type')) this.headers['Content-Type']=this.types['html'];
+            this.headers['Content-Length']=this.body.length;
 
         }
         else if (Array.isArray(body) || typeof(body)==='object') {
             this.body=JSON.stringify(body);
-            this.headers['Content-Type: ']=this.types['html'];
-            this.headers['Content-Length: ']=this.body.length;
+            this.headers['Content-Type']=this.types['html'];
+            this.headers['Content-Length']=this.body.length;
         }
         //covers the most basic body
 
@@ -99,17 +93,19 @@ function HttpResponse(socket) {
         }
         // TODO plus a little fiddling
         //maybe opening a read stream with body..
+        this.sent=true;
 
     };
     this.json=function(body){
         this.body=JSON.stringify(body);
-        this.headers['Content-Type: ']=this.types['html'];
-        this.headers['Content-Length: ']=this.body.length;
+        if (!this.headers.hasOwnProperty('Content-Type')) this.headers['Content-Type']=this.types['html'];
+        this.headers['Content-Length']=this.body.length;
         var header = this.toString();
         if (this.socket.writable) {
             this.socket.write(header);
             this.socket.write(this.body);
         }
+        this.sent=true;
     };
     //TODO maybe this will have to be changed.
     this.toString = function() {
@@ -121,7 +117,7 @@ function HttpResponse(socket) {
         //how important is the order? (could put content len/type first?)
         for (var header in this.headers) {
             if (this.headers.hasOwnProperty(header)) {
-                stResponse=stResponse.concat(header, this.headers[header], NEW_LINE);
+                stResponse=stResponse.concat(header,': ',this.headers[header], NEW_LINE);
             }
         }
         //remove trailing new_line:
@@ -147,12 +143,10 @@ exports.handleRequest = function(data, socket, uses) {
             //check if the path matches the use:
             var matches=uses[i].reg_obj.reg.exec(request.path);
             //didn't match, move on.
-
             if (!matches) {
                 //console.log('no match.');
                 continue;
             }
-            //console.log('weve got a match');
             if_match=true;
             //cool, we've got a match. let's check if we have any params:
             if (uses[i].reg_obj.params.length>1) {
@@ -162,14 +156,11 @@ exports.handleRequest = function(data, socket, uses) {
 
                 }
             }
-
             //now we're here with a match that's filled in the params. what now?
             //create a new response object:
             //console.log('printing req_obj\n');
             //console.log(request);
             //console.log('printing response');
-
-
             //console.log(response);
             //need some kind of next() method to call:
             //console.log('calling for ' + request.path);
@@ -177,9 +168,14 @@ exports.handleRequest = function(data, socket, uses) {
             //console.log("and we're back!");
             //need to be able to return to here somehow. (with the next())
         }
-        if(!if_match) {
+        //console.log('in here!' + if_match);
+
+        if(!if_match || response.sent===false) {
+
             //okay no match, return error response 404 instead as described in spec.:
-            errorResponse(404,socket);
+            //errorResponse(404,socket);
+            response.status(404);
+            response.send("The requested resource not found");
         }
     }
     catch (e) {
@@ -241,7 +237,7 @@ exports.handleStaticResponse=function(request,socket,rootFolder) {
     }
     fs.stat(urlFullPath, function(err, stats) {
         if(!err && stats.isFile()) {
-            var types = new TypeMap();
+            var types = new hujiParser.TypeMap();
             //gets the extension of the requested file
             var extension = urlFullPath.substr(urlFullPath.lastIndexOf('.')+1,
                 urlFullPath.length);
@@ -302,7 +298,7 @@ function sendStaticResponse(response, socket) {
 //file = body
 
 function errorResponse(error_number, socket) {
-    var type=new TypeMap();
+    var type=new hujiParser.TypeMap();
     var path = error_page(error_number);
     fs.stat(path,function(err,stats) {
         if(!err) {

@@ -512,20 +512,21 @@ var test_l = [
     //    }
     //},
 
-    {
-        options: {
-            path:"/request/test/params_input/user/gabi",
-            method:"GET",
-            test_name:"testing request param('name') for user/:name",
-        },
-        expected:{
-            status:200,
-            data:"gabi"
-        }
-    },
+    ////failed
+    //{
+    //    options: {
+    //        path:"/request/test/params_input/user/gabi",
+    //        method:"GET",
+    //        test_name:"testing request param('name') for user/:name",
+    //    },
+    //    expected:{
+    //        status:200,
+    //        data:"gabi"
+    //    }
+    //},
 
 
-
+    //success
     //{
     //    options: {
     //        path:"/response/test/status",
@@ -537,6 +538,7 @@ var test_l = [
     //        data:"gabi was here"
     //    }
     //},
+    //success
     //{
     //    options: {
     //        path:"/response/test/get",
@@ -548,6 +550,7 @@ var test_l = [
     //        data:"response_test_set"
     //    }
     //},
+    //success
     //{
     //    options: {
     //        path:"/response/test/send/2",
@@ -559,6 +562,7 @@ var test_l = [
     //        data:"{\"some\":\"json\"}"
     //    }
     //},
+    //success
     //{
     //    options: {
     //        path:"/response/test/send/3",
@@ -570,7 +574,7 @@ var test_l = [
     //        data:"some html"
     //    }
     //},
-    //
+    //success
     //{
     //    options: {
     //        path:"/response/test/send/5",
@@ -582,6 +586,7 @@ var test_l = [
     //        data:"{\"error\":\"something blew up\"}"
     //    }
     //},
+    //success
     //{
     //    options: {
     //        path:"/response/test/json/3",
@@ -593,6 +598,7 @@ var test_l = [
     //        data:"{\"error\":\"message\"}"
     //    }
     //},
+    //success
     //{
     //    options: {
     //        path:"/response/test/next",
@@ -604,6 +610,7 @@ var test_l = [
     //        data:"next1;next2;next3;"
     //    }
     //},
+    //success
     //{
     //    options: {
     //        path:"/no/such/path",
@@ -615,7 +622,7 @@ var test_l = [
     //        data:"The requested resource not found"
     //    }
     //},
-    //
+    //success
     //{
     //    options: {
     //        path:"/test/cookie",
@@ -628,6 +635,7 @@ var test_l = [
     //        data:"{\"name\":\"value\",\"name2\":\"value2\"}"
     //    }
     //},
+    //success
     //{
     //    options: {
     //        path:"/test/json",
@@ -641,6 +649,7 @@ var test_l = [
     //        data:"{\"omer\":5,\"gabi\":\"7\"}"
     //    }
     //},
+    //failure but okay
     //{
     //    options: {
     //        path:"/test/bodyParser",
@@ -655,6 +664,7 @@ var test_l = [
     //        data:"{\"param1\":\"value1\",\"param2\":\"value2\"}"
     //    }
     //},
+    //success
     // {
     //    options: {
     //        path:"/request/test/get/Content-Type",
@@ -669,6 +679,7 @@ var test_l = [
     //        data:"text/html"
     //    }
     //},
+    //success
     //{
     //    options: {
     //        path:"/request/test/get/Something",
@@ -683,6 +694,7 @@ var test_l = [
     //        data:""
     //    }
     //},
+    //success
     //{
     //    options: {
     //        path:"/request/test/is",
@@ -709,6 +721,7 @@ var test_l = [
     //        data:"true"
     //    }
     //},
+    //success
     //{
     //    options: {
     //        path:"/request/test/is",
@@ -722,17 +735,18 @@ var test_l = [
     //        data:"true"
     //    }
     //},
-    //{
-    //    options: {
-    //        path:"/request/test/is",
-    //        method:"POST",
-    //        test_name:"testing req.is('application/json') for \"Content-Type: application/json\"",
-    //        headers:{"Content-Type": "application/json", "Content-Length":'application/json'.length },
-    //        data:'application/json'
-    //    },
-    //    expected:{
-    //        status:200,
-    //        data:"true"
-    //    }
-    //}
+    //success
+    {
+        options: {
+            path:"/request/test/is",
+            method:"POST",
+            test_name:"testing req.is('application/json') for \"Content-Type: application/json\"",
+            headers:{"Content-Type": "application/json", "Content-Length":'application/json'.length },
+            data:'application/json'
+        },
+        expected:{
+            status:200,
+            data:"true"
+        }
+    }
 ];

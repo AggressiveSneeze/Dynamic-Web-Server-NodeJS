@@ -132,6 +132,7 @@ var server=serve.start(8888,function(a){
 //
 server.use('/request/test/params_input/user/:name', function(req, res, next) {
     res.status(200);
+    console.log(req.param('name'));
     res.send(req.param('name'));
 });
 

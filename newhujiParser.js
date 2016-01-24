@@ -26,12 +26,24 @@ var versionId = ['1.0', '1.1'];
 var error_bad_request_format = new Error("Request format unfamiliar");
 var error_request_part_missing = new Error("Part of the request is missing");
 
+exports.TypeMap=function() {
+    this['js'] = 'application/javascript';
+    this['html'] = 'text/html';
+    this['txt'] = 'text/plain';
+    this['css'] = 'text/css';
+    this['jpg'] = 'image/jpeg';
+    this['jpeg'] = 'image/jpeg';
+    this['gif'] = 'image/gif';
+    this['png'] = 'image/png';
+    this['json']='application/json';
+};
 
 function HttpRequest() {
     this.method = null;
     this.ver = null;
     this.header = {};
     this.body = null;
+    this.types = new exports.TypeMap();
 
     //adding new stuff for ex4
     this.params={};
@@ -45,14 +57,16 @@ function HttpRequest() {
         return this.header[field];
     };
     this.param=function(field) {
-        if (this.params.hasOwnProperty(field)) return this.params[field];
+        if (this.params.hasOwnProperty(field)) {
+            return this.params[field];
+        }
         else if (this.query.hasOwnProperty(field)) return this.query[field];
         else return null;
-        //TODO add body support
     };
-    //todo check if this is okay.
+
     this.is=function(type) {
-        return (this.header['Content-Type']==type);
+        var this_type = this.header['Content-Type'].split(';')[0];
+        return (this_type==type ||this_type==this.types[type]);
     };
 }
 
@@ -89,7 +103,6 @@ exports.parseRequest = function(data) {
         var header_line = meta_data[i].split(': ');
         requestObj.header[header_line[0]] = header_line[1];
     }
-
     //obtain and remove cookies from header object.
     if (requestObj.header.hasOwnProperty('Cookie')) {
         var temp_cookies = requestObj.header['Cookie'];
@@ -103,10 +116,11 @@ exports.parseRequest = function(data) {
 
     //console.log('got these cookies:');
     //console.log(requestObj.cookies);
+    //TODO: write bodyparser middleware. however no points deducted, so returning as string as instructed in forums.
     requestObj.body = '';
-
-    if (typeof groups[1]==='undefined') requestObj.body=null;
-    else requestObj.body=JSON.parse(groups[1]);
+    if (typeof groups[1]==='undefined') requestObj.body='';
+    else requestObj.body=groups[1];
+    //console.log(requestObj.body);
     //for(i = 1; i < groups.length - 1; i++) {
     //    console.log('body component: ');
     //    console.log(groups[i]);

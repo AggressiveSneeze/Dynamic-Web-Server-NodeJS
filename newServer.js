@@ -155,8 +155,8 @@ function create_reg(resource) {
     //console.log(reg_obj.reg);
     reg_obj.params=params;
 
-    console.log('params looks like: ');
-    console.log(params);
+    //console.log('params looks like: ');
+    //console.log(params);
 
     return reg_obj;
 }
