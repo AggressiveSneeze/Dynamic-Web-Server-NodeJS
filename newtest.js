@@ -46,31 +46,31 @@ var server=serve.start(8888,function(a){
 //    res.send(JSON.stringify(req.params));
 //});
 
-server.use("/static", serve.static("www"));
-server.use('/test/cookie', function(req, res, next) {
-    res.status(200);
-    res.send(req.cookies);
-});
-
-server.use('/x/y', function(req, res, next) {
-    res.status(200);
-    res.send(req.path);
-});
-
-server.use('/params/:id/gabi/:num', function(req, res, next) {
-    res.status(200);
-    res.send(req.path + '->' + JSON.stringify(req.params));
-});
-
-
-server.use(function(req, res, next) {
-    if (req.path == '/catchme/foo/boo/style.css') {
-        res.status(200);
-        res.send("catch /*");
-        return;
-    }
-    next();
-});
+//server.use("/static", serve.static("www"));
+//server.use('/test/cookie', function(req, res, next) {
+//    res.status(200);
+//    res.send(req.cookies);
+//});
+//
+//server.use('/x/y', function(req, res, next) {
+//    res.status(200);
+//    res.send(req.path);
+//});
+//
+//server.use('/params/:id/gabi/:num', function(req, res, next) {
+//    res.status(200);
+//    res.send(req.path + '->' + JSON.stringify(req.params));
+//});
+//
+//
+//server.use(function(req, res, next) {
+//    if (req.path == '/catchme/foo/boo/style.css') {
+//        res.status(200);
+//        res.send("catch /*");
+//        return;
+//    }
+//    next();
+//});
 
 
 //server.use('/request/test/params/:param', function(req, res, next) {
@@ -124,16 +124,17 @@ server.use(function(req, res, next) {
 //});
 //
 //
+
 //server.use('/request/test/param', function(req, res, next) {
 //    res.status(200);
 //    res.send(req.param('name'));
 //});
 //
-//server.use('/request/test/params_input/user/:name', function(req, res, next) {
-//    res.status(200);
-//    res.send(req.param('name'));
-//});
-//
+server.use('/request/test/params_input/user/:name', function(req, res, next) {
+    res.status(200);
+    res.send(req.param('name'));
+});
+
 //
 //server.use('/request/test/is', function(req, res, next) {
 //    var t = req.is(req.body);
@@ -220,7 +221,7 @@ server.use(function(req, res, next) {
 //            res.status(404).send();
 //    }
 //});
-//
+////
 //
 //server.use('/response/test/next', function(req, res, next) {
 //    res.body = 'next1;'
@@ -253,6 +254,12 @@ server.use(function(req, res, next) {
 //    res.status(200).send(JSON.stringify(req.body));
 //});
 //
+//server.use('/request/test/cookie', function(req, res, next) {
+//    res.status(200);
+//    res.send(JSON.stringify(req.cookies));
+//});
+//
+////
 //
 //
 //server.use('/test/bodyParser', function(req, res, next) {

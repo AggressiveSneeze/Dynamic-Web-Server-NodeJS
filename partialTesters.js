@@ -370,137 +370,148 @@ function report_test_results() {
 function run_server_tests() {
     setTimeout(function() {
         single_server_test(test_l[0].options, test_l[0].expected)
-    }, 1000);
+    }, 2000);
 }
 
 // array of all the tests that we're running on the server
 var test_l = [
-    {
-        options: {
-            path:"/test/cookie",
-            method:"GET",
-            test_name:"testing the cookie parsing",
-            headers:{"Cookie": "name=value; name2=value2" }
-        },
-        expected:{
-            status:200,
-            data:"{\"name\":\"value\",\"name2\":\"value2\"}"
-        }
-    },
-    {
-        options: {
-                path:"/params/201582723/gabi/25/gabi.txt",
-            method:"GET",
-            test_name:"testing path with parameters e.g /params/:id/gabi/:num/"
-        },
-        expected:{
-            status:200,
-            data:"/params/201582723/gabi/25/gabi.txt->{\"id\":\"201582723\",\"num\":\"25\"}"
-        }
-    },
-    {
-        options: {
-            path:"/catchme/foo/boo/style.css",
-            method:"GET",
-            test_name:"testing the use(func(){..}) will catch /* paths, ( resource is optional )"
-        },
-        expected:{
-            status:200,
-            data:"catch /*"
-        }
-    }, // request
-    {
-        options: {
-            path:"/request/test/params/param123",
-            method:"GET",
-            test_name:"testing the request params object"
-        },
-        expected:{
-            status:200,
-            data:"{\"param\":\"param123\"}"
-        }
-    },
-    {
-        options: {
-            path:"/request/test/query?q=omer+ornan",
-            method:"GET",
-            test_name:"testing the request query object for ?q=omer+ornan"
-        },
-        expected:{
-            status:200,
-            data:"{\"q\":\"omer ornan\"}"
-        }
-    },
-    {
-        options: {
-            path:"/request/test/cookie",
-            method:"GET",
-            test_name:"testing the request Cookie object for Cookie: name=tj",
-            headers:{Cookie: "name=tj"}
-        },
-        expected:{
-            status:200,
-            data:"{\"name\":\"tj\"}"
-        }
-    },
-    {
-        options: {
-            path:"/request/test/cookie",
-            method:"GET",
-            test_name:"testing the request Cookie object for Cookie: name=tj; class=sponge bob",
-            headers:{Cookie: "name=tj; class=sponge bob"}
-        },
-        expected:{
-            status:200,
-            data:"{\"name\":\"tj\",\"class\":\"sponge bob\"}"
-        }
-    },
-    {
-        options: {
-            path:"/request/test/path/gabi?order=desc&shoe[color]=blue&shoe[type]=converse",
-            method:"GET",
-            test_name:"testing the request path",
-        },
-        expected:{
-            status:200,
-            data:"/request/test/path/gabi"
-        }
-    },
-    {
-        options: {
-            path:"/request/test/host/omer.txt",
-            method:"GET",
-            test_name:"testing the request host",
-        },
-        expected:{
-            status:200,
-            data:"localhost:8080"
-        }
-    },
-    {
-        options: {
-            path:"/request/test/protocol/omer.txt",
-            method:"GET",
-            test_name:"testing the request protocol",
-        },
-        expected:{
-            status:200,
-            data:"http"
-        }
-    },
-   
-    {
-        options: {
-            path:"/request/test/param?name=gabi",
-            method:"GET",
-            test_name:"testing request param('name') for path ?name=gabi",
+    //success
+    //{
+    //    options: {
+    //        path:"/request/test/param?name=gabi",
+    //        method:"GET",
+    //        test_name:"testing request param('name') for path ?name=gabi",
+    //
+    //    },
+    //    expected:{
+    //        status:200,
+    //        data:"gabi"
+    //    }
+    //},
+    //success
+    //{
+    //    options: {
+    //        path:"/test/cookie",
+    //        method:"GET",
+    //        test_name:"testing the cookie parsing",
+    //        headers:{"Cookie": "name=value; name2=value2" }
+    //    },
+    //    expected:{
+    //        status:200,
+    //        data:"{\"name\":\"value\",\"name2\":\"value2\"}"
+    //    }
+    //},
+    //success
+    //{
+    //    options: {
+    //        path:"/params/201582723/gabi/25/gabi.txt",
+    //        method:"GET",
+    //        test_name:"testing path with parameters e.g /params/:id/gabi/:num/"
+    //    },
+    //    expected:{
+    //        status:200,
+    //        data:"/params/201582723/gabi/25/gabi.txt->{\"id\":\"201582723\",\"num\":\"25\"}"
+    //    }
+    //},
+    ////success
+    //{
+    //    options: {
+    //        path:"/catchme/foo/boo/style.css",
+    //        method:"GET",
+    //        test_name:"testing the use(func(){..}) will catch /* paths, ( resource is optional )"
+    //    },
+    //    expected:{
+    //        status:200,
+    //        data:"catch /*"
+    //    }
+    //}, // request
+    ////success
+    //{
+    //    options: {
+    //        path:"/request/test/params/param123",
+    //        method:"GET",
+    //        test_name:"testing the request params object"
+    //    },
+    //    expected:{
+    //        status:200,
+    //        data:"{\"param\":\"param123\"}"
+    //    }
+    //},
+    ////success
+    //{
+    //    options: {
+    //        path:"/request/test/query?q=omer+ornan",
+    //        method:"GET",
+    //        test_name:"testing the request query object for ?q=omer+ornan"
+    //    },
+    //    expected:{
+    //        status:200,
+    //        data:"{\"q\":\"omer ornan\"}"
+    //    }
+    //},
+    //success
+    //{
+    //    options: {
+    //        path:"/request/test/cookie",
+    //        method:"GET",
+    //        test_name:"testing the request Cookie object for Cookie: name=tj",
+    //        headers:{Cookie: "name=tj"}
+    //    },
+    //    expected:{
+    //        status:200,
+    //        data:"{\"name\":\"tj\"}"
+    //    }
+    //},
+    //success
+    //{
+    //    options: {
+    //        path:"/request/test/cookie",
+    //        method:"GET",
+    //        test_name:"testing the request Cookie object for Cookie: name=tj; class=sponge bob",
+    //        headers:{Cookie: "name=tj; class=sponge bob"}
+    //    },
+    //    expected:{
+    //        status:200,
+    //        data:"{\"name\":\"tj\",\"class\":\"sponge bob\"}"
+    //    }
+    //},
+    //success
+    //{
+    //    options: {
+    //        path:"/request/test/path/gabi?order=desc&shoe[color]=blue&shoe[type]=converse",
+    //        method:"GET",
+    //        test_name:"testing the request path",
+    //    },
+    //    expected:{
+    //        status:200,
+    //        data:"/request/test/path/gabi"
+    //    }
+    //},
+    //success
+    //{
+    //    options: {
+    //        path:"/request/test/host/omer.txt",
+    //        method:"GET",
+    //        test_name:"testing the request host",
+    //    },
+    //    expected:{
+    //        status:200,
+    //        data:"localhost:8080"
+    //    }
+    //},
+    ////success
+    //{
+    //    options: {
+    //        path:"/request/test/protocol/omer.txt",
+    //        method:"GET",
+    //        test_name:"testing the request protocol",
+    //    },
+    //    expected:{
+    //        status:200,
+    //        data:"http"
+    //    }
+    //},
 
-        },
-        expected:{
-            status:200,
-            data:"gabi"
-        }
-    },
     {
         options: {
             path:"/request/test/params_input/user/gabi",
@@ -515,213 +526,213 @@ var test_l = [
 
 
 
-    {
-        options: {
-            path:"/response/test/status",
-            method:"GET",
-            test_name:"testing res.status(404)"
-        },
-        expected:{
-            status:404,
-            data:"gabi was here"
-        }
-    },
-    {
-        options: {
-            path:"/response/test/get",
-            method:"GET",
-            test_name:"testing res.get('Content-Type')"
-        },
-        expected:{
-            status:200,
-            data:"response_test_set"
-        }
-    },
-    {
-        options: {
-            path:"/response/test/send/2",
-            method:"GET",
-            test_name:"testing res.send({ some: 'json' })"
-        },
-        expected:{
-            status:200,
-            data:"{\"some\":\"json\"}"
-        }
-    },
-    {
-        options: {
-            path:"/response/test/send/3",
-            method:"GET",
-            test_name:"testing res.send('some html')"
-        },
-        expected:{
-            status:200,
-            data:"some html"
-        }
-    },
-
-    {
-        options: {
-            path:"/response/test/send/5",
-            method:"GET",
-            test_name:"testing res.send(500, { error: 'something blew up' })"
-        },
-        expected:{
-            status:500,
-            data:"{\"error\":\"something blew up\"}"
-        }
-    },
-    {
-        options: {
-            path:"/response/test/json/3",
-            method:"GET",
-            test_name:"testing 500, { error: 'message' })"
-        },
-        expected:{
-            status:500,
-            data:"{\"error\":\"message\"}"
-        }
-    },
-    {
-        options: {
-            path:"/response/test/next",
-            method:"GET",
-            test_name:"testing that the next() method works"
-        },
-        expected:{
-            status:200,
-            data:"next1;next2;next3;"
-        }
-    },
-    {
-        options: {
-            path:"/no/such/path",
-            method:"GET",
-            test_name:"testing 404 not found error"
-        },
-        expected:{
-            status:404,
-            data:"The requested resource not found"
-        }
-    },
-
-    {
-        options: {
-            path:"/test/cookie",
-            method:"GET",
-            test_name:"testing the cookieParser middleware",
-            headers:{"Cookie": "name=value; name2=value2" }
-        },
-        expected:{
-            status:200,
-            data:"{\"name\":\"value\",\"name2\":\"value2\"}"
-        }
-    },
-    {
-        options: {
-            path:"/test/json",
-            method:"POST",
-            test_name:"testing the json middleware",
-            headers:{"Content-Type": "application/json", 'Content-Length':JSON.stringify({"omer":5, "gabi":"7"}).length },
-            data:JSON.stringify({"omer":5, "gabi":"7"})
-        },
-        expected:{
-            status:200,
-            data:"{\"omer\":5,\"gabi\":\"7\"}"
-        }
-    },
-    {
-        options: {
-            path:"/test/bodyParser",
-            method:"POST",
-            test_name:"testing the bodyParser middleware",
-            headers:{"Content-Type": "application/x-www-form-urlencoded",
-                'Content-Length':"param1=value1&param2=value2".length },
-            data:"param1=value1&param2=value2"
-        },
-        expected:{
-            status:200,
-            data:"{\"param1\":\"value1\",\"param2\":\"value2\"}"
-        }
-    },
-     {
-        options: {
-            path:"/request/test/get/Content-Type",
-            method:"POST",
-            test_name:"testing request get('Content-Type')",
-            headers:{"Content-Type": "text/html", "Content-Length":"hello world!".length},
-            data:"hello world!"
-
-        },
-        expected:{
-            status:200,
-            data:"text/html"
-        }
-    },
-    {
-        options: {
-            path:"/request/test/get/Something",
-            method:"POST",
-            test_name:"testing request get('Something')",
-            headers:{"Content-Type": "text/html", "Content-Length":"hello world!".length},
-            data:"hello world!"
-
-        },
-        expected:{
-            status:200,
-            data:""
-        }
-    },
-    {
-        options: {
-            path:"/request/test/is",
-            method:"POST",
-            test_name:"testing req.is('html') for \"Content-Type: text/html; charset=utf-8\"",
-            headers:{"Content-Type": "text/html; charset=utf-8", "Content-Length":"html".length },
-            data:"html"
-        },
-        expected:{
-            status:200,
-            data:"true"
-        }
-    },
-    {
-        options: {
-            path:"/request/test/is",
-            method:"POST",
-            test_name:"testing req.is('text/html') for \"Content-Type: text/html; charset=utf-8\"",
-            headers:{"Content-Type": "text/html; charset=utf-8", "Content-Length":'text/html'.length },
-            data:'text/html'
-        },
-        expected:{
-            status:200,
-            data:"true"
-        }
-    },
-    {
-        options: {
-            path:"/request/test/is",
-            method:"POST",
-            test_name:"testing req.is('json') for \"Content-Type: application/json\"",
-            headers:{"Content-Type": "application/json", "Content-Length":'json'.length },
-            data:'json'
-        },
-        expected:{
-            status:200,
-            data:"true"
-        }
-    },
-    {
-        options: {
-            path:"/request/test/is",
-            method:"POST",
-            test_name:"testing req.is('application/json') for \"Content-Type: application/json\"",
-            headers:{"Content-Type": "application/json", "Content-Length":'application/json'.length },
-            data:'application/json'
-        },
-        expected:{
-            status:200,
-            data:"true"
-        }
-    }
+    //{
+    //    options: {
+    //        path:"/response/test/status",
+    //        method:"GET",
+    //        test_name:"testing res.status(404)"
+    //    },
+    //    expected:{
+    //        status:404,
+    //        data:"gabi was here"
+    //    }
+    //},
+    //{
+    //    options: {
+    //        path:"/response/test/get",
+    //        method:"GET",
+    //        test_name:"testing res.get('Content-Type')"
+    //    },
+    //    expected:{
+    //        status:200,
+    //        data:"response_test_set"
+    //    }
+    //},
+    //{
+    //    options: {
+    //        path:"/response/test/send/2",
+    //        method:"GET",
+    //        test_name:"testing res.send({ some: 'json' })"
+    //    },
+    //    expected:{
+    //        status:200,
+    //        data:"{\"some\":\"json\"}"
+    //    }
+    //},
+    //{
+    //    options: {
+    //        path:"/response/test/send/3",
+    //        method:"GET",
+    //        test_name:"testing res.send('some html')"
+    //    },
+    //    expected:{
+    //        status:200,
+    //        data:"some html"
+    //    }
+    //},
+    //
+    //{
+    //    options: {
+    //        path:"/response/test/send/5",
+    //        method:"GET",
+    //        test_name:"testing res.send(500, { error: 'something blew up' })"
+    //    },
+    //    expected:{
+    //        status:500,
+    //        data:"{\"error\":\"something blew up\"}"
+    //    }
+    //},
+    //{
+    //    options: {
+    //        path:"/response/test/json/3",
+    //        method:"GET",
+    //        test_name:"testing 500, { error: 'message' })"
+    //    },
+    //    expected:{
+    //        status:500,
+    //        data:"{\"error\":\"message\"}"
+    //    }
+    //},
+    //{
+    //    options: {
+    //        path:"/response/test/next",
+    //        method:"GET",
+    //        test_name:"testing that the next() method works"
+    //    },
+    //    expected:{
+    //        status:200,
+    //        data:"next1;next2;next3;"
+    //    }
+    //},
+    //{
+    //    options: {
+    //        path:"/no/such/path",
+    //        method:"GET",
+    //        test_name:"testing 404 not found error"
+    //    },
+    //    expected:{
+    //        status:404,
+    //        data:"The requested resource not found"
+    //    }
+    //},
+    //
+    //{
+    //    options: {
+    //        path:"/test/cookie",
+    //        method:"GET",
+    //        test_name:"testing the cookieParser middleware",
+    //        headers:{"Cookie": "name=value; name2=value2" }
+    //    },
+    //    expected:{
+    //        status:200,
+    //        data:"{\"name\":\"value\",\"name2\":\"value2\"}"
+    //    }
+    //},
+    //{
+    //    options: {
+    //        path:"/test/json",
+    //        method:"POST",
+    //        test_name:"testing the json middleware",
+    //        headers:{"Content-Type": "application/json", 'Content-Length':JSON.stringify({"omer":5, "gabi":"7"}).length },
+    //        data:JSON.stringify({"omer":5, "gabi":"7"})
+    //    },
+    //    expected:{
+    //        status:200,
+    //        data:"{\"omer\":5,\"gabi\":\"7\"}"
+    //    }
+    //},
+    //{
+    //    options: {
+    //        path:"/test/bodyParser",
+    //        method:"POST",
+    //        test_name:"testing the bodyParser middleware",
+    //        headers:{"Content-Type": "application/x-www-form-urlencoded",
+    //            'Content-Length':"param1=value1&param2=value2".length },
+    //        data:"param1=value1&param2=value2"
+    //    },
+    //    expected:{
+    //        status:200,
+    //        data:"{\"param1\":\"value1\",\"param2\":\"value2\"}"
+    //    }
+    //},
+    // {
+    //    options: {
+    //        path:"/request/test/get/Content-Type",
+    //        method:"POST",
+    //        test_name:"testing request get('Content-Type')",
+    //        headers:{"Content-Type": "text/html", "Content-Length":"hello world!".length},
+    //        data:"hello world!"
+    //
+    //    },
+    //    expected:{
+    //        status:200,
+    //        data:"text/html"
+    //    }
+    //},
+    //{
+    //    options: {
+    //        path:"/request/test/get/Something",
+    //        method:"POST",
+    //        test_name:"testing request get('Something')",
+    //        headers:{"Content-Type": "text/html", "Content-Length":"hello world!".length},
+    //        data:"hello world!"
+    //
+    //    },
+    //    expected:{
+    //        status:200,
+    //        data:""
+    //    }
+    //},
+    //{
+    //    options: {
+    //        path:"/request/test/is",
+    //        method:"POST",
+    //        test_name:"testing req.is('html') for \"Content-Type: text/html; charset=utf-8\"",
+    //        headers:{"Content-Type": "text/html; charset=utf-8", "Content-Length":"html".length },
+    //        data:"html"
+    //    },
+    //    expected:{
+    //        status:200,
+    //        data:"true"
+    //    }
+    //},
+    //{
+    //    options: {
+    //        path:"/request/test/is",
+    //        method:"POST",
+    //        test_name:"testing req.is('text/html') for \"Content-Type: text/html; charset=utf-8\"",
+    //        headers:{"Content-Type": "text/html; charset=utf-8", "Content-Length":'text/html'.length },
+    //        data:'text/html'
+    //    },
+    //    expected:{
+    //        status:200,
+    //        data:"true"
+    //    }
+    //},
+    //{
+    //    options: {
+    //        path:"/request/test/is",
+    //        method:"POST",
+    //        test_name:"testing req.is('json') for \"Content-Type: application/json\"",
+    //        headers:{"Content-Type": "application/json", "Content-Length":'json'.length },
+    //        data:'json'
+    //    },
+    //    expected:{
+    //        status:200,
+    //        data:"true"
+    //    }
+    //},
+    //{
+    //    options: {
+    //        path:"/request/test/is",
+    //        method:"POST",
+    //        test_name:"testing req.is('application/json') for \"Content-Type: application/json\"",
+    //        headers:{"Content-Type": "application/json", "Content-Length":'application/json'.length },
+    //        data:'application/json'
+    //    },
+    //    expected:{
+    //        status:200,
+    //        data:"true"
+    //    }
+    //}
 ];

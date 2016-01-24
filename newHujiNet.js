@@ -172,7 +172,9 @@ exports.handleRequest = function(data, socket, uses) {
 
             //console.log(response);
             //need some kind of next() method to call:
+            //console.log('calling for ' + request.path);
             uses[i].requestHandler(request,response, function(){});
+            //console.log("and we're back!");
             //need to be able to return to here somehow. (with the next())
         }
         if(!if_match) {
@@ -181,6 +183,13 @@ exports.handleRequest = function(data, socket, uses) {
         }
     }
     catch (e) {
+        //console.log('error would be this ');
+        //console.log(e);
+        //console.log(e instanceof SyntaxError); // true
+        //console.log(e.message);                // "missing ; before statement"
+        //console.log(e.name);                   // "SyntaxError"
+        //console.log(e.lineNumber);             // 1
+        ////console.log('did we get here?');
         errorResponse(400, socket);
     }
 };

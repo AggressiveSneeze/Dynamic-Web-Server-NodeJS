@@ -45,7 +45,10 @@ function HttpRequest() {
         return this.header[field];
     };
     this.param=function(field) {
-        return this.params[field];
+        if (this.params.hasOwnProperty(field)) return this.params[field];
+        else if (this.query.hasOwnProperty(field)) return this.query[field];
+        else return null;
+        //TODO add body support
     };
     //todo check if this is okay.
     this.is=function(type) {
@@ -54,6 +57,7 @@ function HttpRequest() {
 }
 
 exports.parseRequest = function(data) {
+
 
     //console.log("parseRequest" + "\n" + data);
     var requestObj = new HttpRequest();
@@ -72,6 +76,7 @@ exports.parseRequest = function(data) {
     requestObj.host=meta_data[1].split(' ')[1];
     requestObj.query=url_object.query;
 
+
     //checks whether the given http method is not in the list
     if((requestsMethods.indexOf(requestObj.method) === NOT_IN_ARRAY)) throw error_bad_request_format;
 
@@ -80,39 +85,39 @@ exports.parseRequest = function(data) {
 
     //header and body stuff
     //TODO trim the fat from header (if not needed)
-    for(i = 1; i < meta_data.length; i++) {
+    for(var i = 1; i < meta_data.length; i++) {
         var header_line = meta_data[i].split(': ');
         requestObj.header[header_line[0]] = header_line[1];
     }
 
     //obtain and remove cookies from header object.
-
-    var cookies=requestObj.header['Cookie'];
-    if (cookies) {
-        delete requestObj.header['Cookie'];
-        cookies = cookies.split(';');
-        var cookie;
-
-        for (var i=0; i < cookies.length(); i++) {
-            cookie = cookies[i].trim().split('=');
-            requestObj.cookies[cookie[0]] = cookie[1];
+    if (requestObj.header.hasOwnProperty('Cookie')) {
+        var temp_cookies = requestObj.header['Cookie'];
+        temp_cookies = temp_cookies.split(';');
+        for (i = 0; i < temp_cookies.length; i++) {
+            var cookie = temp_cookies[i].split('=');
+            requestObj.cookies[cookie[0].trim()] = cookie[1].trim();
         }
+        delete requestObj.header['Cookie'];
     }
 
-    //console.log(requestObj.header);
-    //console.log('cheese');
+    //console.log('got these cookies:');
+    //console.log(requestObj.cookies);
     requestObj.body = '';
-    /// reunion groups
-    for(i = 1; i < groups.length - 1; i++) {
-        console.log('body component: ');
-        console.log(groups[i]);
-        requestObj.body = requestObj.body + groups[i] + GROUPS_SEP;
-    }
-    //add the last part of the body (only if there was a body)
-    if (i>1) requestObj.body = requestObj.body + groups[i];
-    //reassign body to null as described in project spec (if no body exists.)
-    if (requestObj.body==='') requestObj.body=null;
-    //console.log(requestObj);
+
+    if (typeof groups[1]==='undefined') requestObj.body=null;
+    else requestObj.body=JSON.parse(groups[1]);
+    //for(i = 1; i < groups.length - 1; i++) {
+    //    console.log('body component: ');
+    //    console.log(groups[i]);
+    //    requestObj.body = requestObj.body + groups[i] + GROUPS_SEP;
+    //}
+    ////add the last part of the body (only if there was a body)
+    //if (i>1) requestObj.body = requestObj.body + groups[i];
+    ////reassign body to null as described in project spec (if no body exists.)
+    //if (requestObj.body==='') requestObj.body=null;
+    //console.log('request body is: ');
+    //console.log(requestObj.body);
     return requestObj;
 };
 

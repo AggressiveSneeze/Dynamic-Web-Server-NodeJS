@@ -54,7 +54,7 @@ function start (port,callback) {
         socket.setMaxListeners(0);
 
         //2s according to project spec
-        socket.setTimeout(10000);
+        socket.setTimeout(2000);
 
         //keep track of this socket
 
@@ -151,7 +151,12 @@ function create_reg(resource) {
     }
     reg_string += '';
     reg_obj.reg=new RegExp(reg_string);
+    //console.log('regex:');
+    //console.log(reg_obj.reg);
     reg_obj.params=params;
+
+    console.log('params looks like: ');
+    console.log(params);
 
     return reg_obj;
 }
