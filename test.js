@@ -2,7 +2,7 @@
  * Created by Oak and James on 12/30/2015.
  */
 
-var server = require("./hujiWebServer");
+var server = require("./Ex3/hujiWebServer");
 var http = require('http');
 
 var serverObj=server.start(8888, './' ,function(a){

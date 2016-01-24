@@ -2,7 +2,7 @@
  * Created by Oak and James on 12/30/2015.
  */
 
-var serve = require("./newServer");
+var serve = require("./hujiwebServer");
 var http = require('http');
 
 var server=serve.start(8888,function(a){

@@ -14,7 +14,7 @@ var DEBUG = true;
 var http = require('http');
 var net = require('net');
 http.globalAgent.maxSockets = 250;
-var hujiwebserver = require('./newServer');
+var hujiwebserver = require('./hujiwebServer');
 //work on server
 var server = hujiwebserver.start(PORT, function(err) {
 

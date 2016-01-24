@@ -1,12 +1,16 @@
-//What's here?
+//Author: James Adams Student no 777635004
+//Ex4 Internet Technologies, Hebrew University 2015/16 Autumn Semester.
 
 var net = require('net');
-var hujiNet = require('./newHujiNet');
+var hujiNet = require('./HujiNet');
 
 //constructor for a usecase object
 function UseCase(resource,requestHandler,reg_obj) {
+    //stored for debug purposes, but not really neccessary.
     this.resource=resource;
     this.requestHandler=requestHandler;
+    //regex object which has a regex string for match checking and an array of params that looks like:
+    //params = [null,param1,param2,..,param(n)[
     this.reg_obj=reg_obj;
 }
 
@@ -116,7 +120,7 @@ function start (port,callback) {
     return serverObj;
 
 }
-
+//static requestHandler.
 exports.static=function(rootFolder) {
 
     //make it return a requestHandler function:
@@ -126,12 +130,8 @@ exports.static=function(rootFolder) {
             hujiNet.handleStaticResponse(req,res.socket,rootFolder);
         //next();
     }
-
-
 };
-
-
-//TODO check this method is behaving. might need a few tweaks.
+//method for creating a reg ex object (as described in the use case constructor), from a given resource path.
 function create_reg(resource) {
     var folders = resource.split('/');
     var reg_string = '^';
@@ -151,22 +151,13 @@ function create_reg(resource) {
     }
     reg_string += '';
     reg_obj.reg=new RegExp(reg_string);
-    //console.log('regex:');
-    //console.log(reg_obj.reg);
     reg_obj.params=params;
-
-    //console.log('params looks like: ');
-    //console.log(params);
 
     return reg_obj;
 }
 //export the method so it's publicly accessible upon requiring the module.
 exports.start = start;
 
-//function use(resource,requestHandler()){
-// pretty much here is going to be adding the pair to the data struct.
-
-// }
 
 
 

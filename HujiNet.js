@@ -1,10 +1,9 @@
-/**
- * Created by Oak on 12/28/2015.
- */
+//Author: James Adams Student no 777635004
+//Ex4 Internet Technologies, Hebrew University 2015/16 Autumn Semester.
 
 var GROUPS_SEP = '\r\n\r\n';
 var NEW_LINE = '\r\n';
-var hujiParser = require('./newhujiParser.js');
+var hujiParser = require('./hujiParser.js');
 var net = require('net');
 var fs = require('fs');
 var path = require('path');
@@ -12,10 +11,6 @@ var path = require('path');
 //status
 var success_status = 200;
 
-
-
-
-//TODO support for extra stuff besides number in status
 function HttpResponse(socket) {
     this.sent=false;
     this.types=new hujiParser.TypeMap();
@@ -57,13 +52,6 @@ function HttpResponse(socket) {
         }
     };
     this.send=function(body){
-        //if(typeof(body) === 'undefined') {
-        //    this.headers['Content-Type: ']=this.types['html'];
-        //    this.headers['Content-Length: ']=this.body.length;
-        //    //console.log(this.headers);
-        //    sendResponse(this,this.socket);
-        //}
-
         if (typeof(body)==='string') {
             this.body=body;
 
@@ -82,7 +70,6 @@ function HttpResponse(socket) {
             this.headers['Content-Type']=this.types['html'];
             this.headers['Content-Length']=this.body.length;
         }
-        //covers the most basic body
 
         //do something here to send the response
         //maybe as simple as
@@ -91,8 +78,6 @@ function HttpResponse(socket) {
             this.socket.write(header);
             this.socket.write(this.body);
         }
-        // TODO plus a little fiddling
-        //maybe opening a read stream with body..
         this.sent=true;
 
     };
@@ -107,37 +92,32 @@ function HttpResponse(socket) {
         }
         this.sent=true;
     };
-    //TODO maybe this will have to be changed.
     this.toString = function() {
         var stResponse = '';
         stResponse=stResponse.concat('HTTP/', this.version,' ',String(this.status_code), NEW_LINE);
-        //check this
-        //console.log('headers are:');
-        //console.log(this.headers);
-        //how important is the order? (could put content len/type first?)
         for (var header in this.headers) {
             if (this.headers.hasOwnProperty(header)) {
                 stResponse=stResponse.concat(header,': ',this.headers[header], NEW_LINE);
             }
         }
-        //remove trailing new_line:
-        //stResponse=stResponse.substring(0,stResponse.length-1);
-        //add final group_sep
+        //add final new line
         stResponse+=NEW_LINE;
         return stResponse;
     }
 }
 
 
-//currently handles static reqs
+//Dynamic request handler
 exports.handleRequest = function(data, socket, uses) {
+
     try {
         var if_match=false;
+        //parse the request into a HTTPRequest object defined in the parser.
         var request = hujiParser.parseRequest(data.toString().trim());
         //now we have the request sans the params
-        //let's see what we can do
-
+        //initialise the response object (defined above)
         var response = new HttpResponse(socket);
+
         //first stage, iterate over all the uses:
         for(var i=0;i<uses.length;i++) {
             //check if the path matches the use:
@@ -153,36 +133,23 @@ exports.handleRequest = function(data, socket, uses) {
                 //cool we have same params to fill in:
                 for(var j=1; j<uses[i].reg_obj.params.length;j++) {
                     request.params[uses[i].reg_obj.params[j]]=matches[j];
-
                 }
             }
-            //now we're here with a match that's filled in the params. what now?
-            //create a new response object:
-            //console.log('printing req_obj\n');
-            //console.log(request);
-            //console.log('printing response');
-            //console.log(response);
-            //need some kind of next() method to call:
-            //console.log('calling for ' + request.path);
             uses[i].requestHandler(request,response, function(){});
-            //console.log("and we're back!");
-            //need to be able to return to here somehow. (with the next())
         }
-        //console.log('in here!' + if_match);
 
         if(!if_match || response.sent===false) {
-
             //okay no match, return error response 404 instead as described in spec.:
-            //errorResponse(404,socket);
             response.status(404);
             response.send("The requested resource not found");
         }
     }
     catch (e) {
+        //some extra info if needed
         //console.log('error would be this ');
         //console.log(e);
-        //console.log(e instanceof SyntaxError); // true
-        //console.log(e.message);                // "missing ; before statement"
+        //console.log(e instanceof SyntaxError); //
+        //console.log(e.message);                //
         //console.log(e.name);                   // "SyntaxError"
         //console.log(e.lineNumber);             // 1
         ////console.log('did we get here?');
@@ -191,7 +158,7 @@ exports.handleRequest = function(data, socket, uses) {
 };
 
 
-//sends the given response string to the given socket.
+//sends the given response string to the given socket (rarely used, only for error responses.
 function sendResponse(response, socket) {
 
 
@@ -205,7 +172,6 @@ function sendResponse(response, socket) {
             }
             else socket.write(response.body);
         });
-        //socket.write('potato');
 
     }
     //socket isn't writable, so destroy it:
@@ -217,9 +183,8 @@ function sendResponse(response, socket) {
 
 
 
-
+//static response handler.
 exports.handleStaticResponse=function(request,socket,rootFolder) {
-    //console.log("handleStaticResponse");
     try{
         if (request.method!=="GET")  {
             errorResponse(500, socket);
@@ -255,21 +220,15 @@ exports.handleStaticResponse=function(request,socket,rootFolder) {
                 //send it to the right socket.
                 sendStaticResponse(response, socket);
             }
-            //TODO what if extension isn't in types?
         }
 
         else {
             //doesn't exist error
             errorResponse(404,socket);
         }
-        //if we're here, error handling. TODO
     } )
 };
 
-
-
-
-//yes! static works!    
 
 //sends the given response string to the given socket.
 function sendStaticResponse(response, socket) {
@@ -292,11 +251,7 @@ function sendStaticResponse(response, socket) {
     })
 }
 
-
-
-//open file as buffer.
-//file = body
-
+//error handling stuff
 function errorResponse(error_number, socket) {
     var type=new hujiParser.TypeMap();
     var path = error_page(error_number);
@@ -329,7 +284,6 @@ function error_page(error_number) {
     if (error_number===410) {
         return __dirname+path.sep+"410.html";
     }
-    //else what TODO
 }
 
 
