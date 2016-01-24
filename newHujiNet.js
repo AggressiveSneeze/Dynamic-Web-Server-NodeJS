@@ -73,6 +73,7 @@ function HttpResponse(socket) {
         if (typeof(body)==='string') {
             this.body=body;
             this.headers['Content-Type: ']=this.types['html'];
+            //only worked adding+2?
             this.headers['Content-Length: ']=this.body.length;
         }
 
@@ -91,20 +92,11 @@ function HttpResponse(socket) {
 
         //do something here to send the response
         //maybe as simple as
-        //sendResponse(this,this.socket);
         var header = this.toString();
         if (this.socket.writable) {
             this.socket.write(header);
             this.socket.write(this.body);
         }
-            //socket.write('potato');
-
-        ////socket isn't writable, so destroy it:
-        //socket.on('error', function() {
-        //    //destroy the socket.
-        //    socket.destroy();
-        //});
-        //
         // TODO plus a little fiddling
         //maybe opening a read stream with body..
 
@@ -133,12 +125,11 @@ function HttpResponse(socket) {
             }
         }
         //remove trailing new_line:
-        stResponse=stResponse.substring(0,stResponse.length-1);
+        //stResponse=stResponse.substring(0,stResponse.length-1);
         //add final group_sep
-        stResponse+=GROUPS_SEP;
+        stResponse+=NEW_LINE;
         return stResponse;
     }
-
 }
 
 
@@ -150,6 +141,7 @@ exports.handleRequest = function(data, socket, uses) {
         //now we have the request sans the params
         //let's see what we can do
 
+        var response = new HttpResponse(socket);
         //first stage, iterate over all the uses:
         for(var i=0;i<uses.length;i++) {
             //check if the path matches the use:
@@ -176,11 +168,11 @@ exports.handleRequest = function(data, socket, uses) {
             //console.log('printing req_obj\n');
             //console.log(request);
             //console.log('printing response');
-            var response = new HttpResponse(socket);
+
 
             //console.log(response);
             //need some kind of next() method to call:
-            uses[i].requestHandler(request,response /*,next()*/);
+            uses[i].requestHandler(request,response, function(){});
             //need to be able to return to here somehow. (with the next())
         }
         if(!if_match) {
@@ -200,13 +192,11 @@ function sendResponse(response, socket) {
 
     var header = response.toString();
 
-    console.log(header);
     if (socket.writable) {
         socket.write(header, function() {
             //autocloses with the conditions defined in the project spec.
             if (response.connection==='close' || (!response.connection && response.version==='1.0') ) {
-                console.log('body is: '+response.body);
-                socket.write(response.body);
+                //socket.write(response.body);
             }
             else socket.write(response.body);
         });
@@ -232,7 +222,6 @@ exports.handleStaticResponse=function(request,socket,rootFolder) {
         else {
             var rootRealpath = fs.realpathSync('./');
             var urlFullPath = path.normalize(rootRealpath + '/'+rootFolder+ request.path);
-            console.log('trying to serve from the path '+urlFullPath);
             //not sure if necessary, isn't this just checking if the line above was okay?
             if (urlFullPath.indexOf(rootRealpath) !== 0) errorResponse(404, socket);
         }

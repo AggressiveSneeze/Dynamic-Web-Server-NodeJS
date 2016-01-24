@@ -69,7 +69,7 @@ exports.parseRequest = function(data) {
     var vid = request_desc[VERSION_INDEX].split('/');
     requestObj.protocol=vid[0].toLowerCase();
     requestObj.path=url_object.pathname;
-    requestObj.host=meta_data[1].split(' ')[1].split(':')[0];
+    requestObj.host=meta_data[1].split(' ')[1];
     requestObj.query=url_object.query;
 
     //checks whether the given http method is not in the list

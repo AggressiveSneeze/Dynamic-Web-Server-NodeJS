@@ -389,7 +389,7 @@ var test_l = [
     },
     {
         options: {
-            path:"/params/201582723/gabi/25/gabi.txt",
+                path:"/params/201582723/gabi/25/gabi.txt",
             method:"GET",
             test_name:"testing path with parameters e.g /params/:id/gabi/:num/"
         },
