@@ -128,6 +128,8 @@ exports.handleRequest = function(data, socket, uses) {
                 continue;
             }
             if_match=true;
+            //quick fix in case we're handling a static resource (which should be served under /static):
+            if (uses[i].resource==='/static') response.sent=true;
             //cool, we've got a match. let's check if we have any params:
             if (uses[i].reg_obj.params.length>1) {
                 //cool we have same params to fill in:
@@ -192,21 +194,30 @@ exports.handleStaticResponse=function(request,socket,rootFolder) {
         else {
             var rootRealpath = fs.realpathSync('./');
             var urlFullPath = path.normalize(rootRealpath + '/'+rootFolder+ request.path);
+            console.log(urlFullPath);
             //not sure if necessary, isn't this just checking if the line above was okay?
-            if (urlFullPath.indexOf(rootRealpath) !== 0) errorResponse(404, socket);
+            if (urlFullPath.indexOf(rootRealpath) !== 0) {
+
+
+                errorResponse(404, socket);
+            }
         }
     }
 
     catch (e) {
+
         errorResponse(400, socket);
     }
     fs.stat(urlFullPath, function(err, stats) {
         if(!err && stats.isFile()) {
+
             var types = new hujiParser.TypeMap();
             //gets the extension of the requested file
             var extension = urlFullPath.substr(urlFullPath.lastIndexOf('.')+1,
                 urlFullPath.length);
+
             if(extension in types) {
+
                 var fd = fs.createReadStream(urlFullPath);
                 var contentType=types[extension];
                 var connection;
@@ -217,7 +228,9 @@ exports.handleStaticResponse=function(request,socket,rootFolder) {
                 //generate the http response string.
                 var response = new hujiParser.HttpResponse(request.version, success_status, connection, contentType,
                     stats.size, fd);
+
                 //send it to the right socket.
+
                 sendStaticResponse(response, socket);
             }
         }
@@ -227,6 +240,8 @@ exports.handleStaticResponse=function(request,socket,rootFolder) {
             errorResponse(404,socket);
         }
     } )
+
+
 };
 
 
@@ -236,6 +251,7 @@ function sendStaticResponse(response, socket) {
     var header = response.toString();
 
     if (socket.writable) {
+
         socket.write(header, function() {
             //autocloses with the conditions defined in the project spec.
             if (response.connection==='close' || (!response.connection && response.version==='1.0') ) {

@@ -5,10 +5,10 @@
 var serve = require("./hujiwebServer");
 var http = require('http');
 
-var server=serve.start(8888,function(a){
+var serverObj=serve.start(8888,function(a){
     a?(console.log(a)):(console.log('Server is up, port 8888'));
 });
-
+serverObj.use("/static", serve.static("www"));
 
 //serverObj.use('/test/cookie', function(req, res, next) {
 //    res.status(200);
@@ -26,7 +26,7 @@ var server=serve.start(8888,function(a){
 //    res.send(req.path + '->' + JSON.stringify(req.params));
 //});
 //
-//serverObj.use("/static", server.static("www"));
+
 //
 //serverObj.use('/x/y', function(req, res, next) {
 //    res.status(200);
@@ -130,11 +130,11 @@ var server=serve.start(8888,function(a){
 //    res.send(req.param('name'));
 //});
 //
-server.use('/request/test/params_input/user/:name', function(req, res, next) {
-    res.status(200);
-    console.log(req.param('name'));
-    res.send(req.param('name'));
-});
+//server.use('/request/test/params_input/user/:name', function(req, res, next) {
+//    res.status(200);
+//    console.log(req.param('name'));
+//    res.send(req.param('name'));
+//});
 
 //
 //server.use('/request/test/is', function(req, res, next) {
